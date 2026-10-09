@@ -1,0 +1,154 @@
+# 项目开发与变更日志 (log.md)
+
+> [!IMPORTANT]
+> **【开发者 / AI Agent 强制协作规范】**
+> 1. **开发前必读**：所有承接本项目的开发者与 AI Agent 在开启新一轮对话或开始新需求前，**必须首先阅读本文件（`log.md`）**，快速掌握最近的变更历史、已知问题与当前架构状态。
+> 2. **对话结束前必更**：在每段对话/任务开发完成后，**必须将本次修改的详细日志追加到本文件末尾**。
+> 3. **极简高效、降低 Token 依赖**：通过维护清晰、结构化的日志记录，无需在对话上下文中反复传递大量历史代码，实现跨会话高效协作与状态衔接。
+
+---
+
+## 日志格式规范
+
+每次提交记录请按以下标准 Markdown 格式追加在下方：
+
+```markdown
+### [YYYY-MM-DD] 任务/变更简述
+- **执行人 / Agent**: <名称 / 模型>
+- **需求背景 / 变更目的**: <简述为何修改>
+- **核心修改清单**:
+  - `文件路径`: 具体改动内容与实现逻辑
+- **影响范围与破坏性变更**: <无 / 具体说明>
+- **待办 / 后续注意事项**: <下一步工作建议>
+```
+
+---
+
+## 变更历史记录
+
+### [2026-10-09] 项目工程化文档初始化与全景技术梳理
+- **执行人 / Agent**: Antigravity (Pair Programming Assistant)
+- **需求背景 / 变更目的**: 建立项目技术全景图、标准化 Android 打包构建文档，以及规范化后续开发协作日志流程。
+- **核心修改清单**:
+  - `operation.md`: 完整梳理并创建了 Android APK 打包全流程指南，涵盖环境要求（Node.js >= 18, JDK 17, SDK 36, NDK 26.1.10909125）、签名文件配置、Release/Debug 构建命令、分包架构及常见编译报错排查。
+  - `agent.md`: 编写了完整的技术架构分析报告，深入解析了 React Native 0.73 + TypeScript + Wix Navigation + QuickJS 原生沙箱 + TrackPlayer 音频播放体系与分层设计。
+  - `log.md`: 创建日志跟踪规范文件，确立后续开发必须遵循的“前置阅读 + 任务完结记录”工作流。
+- **影响范围与破坏性变更**: 无，仅在项目根目录新增规范与技术文档。
+- **待办 / 后续注意事项**:
+  - 后续任何针对业务代码（`src/`）或原生底层（`android/`）的修改，均需在完工后同步更新此日志。
+
+### [2026-10-09] 制定 Spotify 风格重构设计指南 (design.md)
+- **执行人 / Agent**: Antigravity (Pair Programming Assistant)
+- **需求背景 / 变更目的**: 梳理项目向 Spotify 现代 UI/UX 风格重构的思路，制定设计资产获取途径、开源借鉴方案、功能裁剪策略与交互升级路线图。
+- **核心修改清单**:
+  - `design.md`: 创建 Spotify 风格改造方案文件，涵盖：
+    1. UI/UX 资产获取途径（Figma 社区 UI Kit、Mobbin 交互录屏库、PageFlows）；
+    2. GitHub 开源项目借鉴（`spotify-react-native-clone`、`react-native-reanimated` 手势抽屉、`react-native-image-colors` 动态色彩提取）；
+    3. 功能裁剪与精简策略（精简多余的主题色板与繁琐九宫格排行榜、隐蔽 UserAPI 选项与桌面悬浮窗繁杂设置、突出纯粹听歌流）；
+    4. 核心交互重构清单（底部悬浮胶囊 Mini Player + 上滑展开抽屉、首页 2x3 胶囊卡片 + 横向滑动卡片流、搜索大磁贴、自适应渐变流动背景、沉浸式卡片歌词）；
+    5. Design Tokens 规范与 4 阶段实施路线图。
+- **影响范围与破坏性变更**: 无，仅新增设计方案文档 `design.md`。
+- **待办 / 后续注意事项**:
+  - 下阶段可依照 `design.md` 中的 Phase 1 开始重构全局 Design Tokens 与基础暗黑主题。
+
+### [2026-10-09] 升级 design.md：补充 GitHub 源码级 Spotify 开源参考与组件映射
+- **执行人 / Agent**: Antigravity (Pair Programming Assistant)
+- **需求背景 / 变更目的**: 针对无法访问 Figma 与官方渠道的情况，全面梳理 GitHub 上可直接阅读、直接抄代码的 React Native Spotify 仿制开源项目、手势抽屉与矢量图标映射。
+- **核心修改清单**:
+  - `design.md`: 
+    1. 增加 4 个顶级 GitHub 开源 React Native 仓库（`dhunanyan/spotify-clone`, `AndresXI/RN-Spotify-Clone-Redesigned`, `Savinvadim1312/SpotifyClone`, `marcelo-is/spotify-react-native-clone`）的详细代码模块借鉴清单；
+    2. 明确了 Mini Player 底部手势抽屉、封面自适应渐变背景（`react-native-image-colors`）的落地代码逻辑；
+    3. 梳理了本项目内置 `react-native-vector-icons` 的 Spotify 核心图标映射表，实现零外部资源依赖。
+- **影响范围与破坏性变更**: 无，仅更新设计文档 `design.md`。
+- **待办 / 后续注意事项**: 准备启动 Phase 1 阶段主题与样式变量的重构。
+
+### [2026-10-09] 最终需求与实施方案确认（达成 100% 信心）
+- **执行人 / Agent**: Antigravity (Pair Programming Assistant)
+- **需求背景 / 变更目的**: 通过多轮深度提问，精准厘清用户对 Spotify 风格改造的范围边界、视觉取舍与技术选型。
+- **确认的核心方案决策**:
+  1. **改造深度**：深度交互重写（Spotify 3-Tab 原生导航 + 悬浮 Mini Player 胶囊 + 卡片式瀑布流 + 沉浸式全屏播放器）；
+  2. **视觉与主题**：彻底移除多主题与自定义背景干扰，锁定 Spotify Pure Dark（炭黑 `#121212`、卡片 `#181818`/`#282828`、高亮 `#1ed760`）；
+  3. **数据策略**：聚合本地历史/收藏与在线榜单，填充 2x3 问候胶囊与横向滑动推荐流；
+  4. **功能裁剪**：隐蔽主界面 UserAPI（收纳至设置），裁撤独立下载页（合并至音乐库 Downloaded），桌面悬浮歌词降级为开关，精简横屏分支；
+  5. **实施路径**：先骨架（全局 Tokens + 3-Tab 底部栏 + Mini Player 胶囊），再逐步落地首页与各子页面。
+- **影响范围与破坏性变更**: 明确了后续业务代码与主题重构的方向。
+- **待办 / 后续注意事项**: 正式启动第一阶段开发。
+
+### [2026-10-09] Phase 1 落地：Spotify 全局调色板与 Design Tokens 注入
+- **执行人 / Agent**: Antigravity (Pair Programming Assistant)
+- **需求背景 / 变更目的**: 落实 Spotify 纯正暗黑视觉底座，统一全局背景色、卡片色、圆角与字阶 Tokens。
+- **核心修改清单**:
+  - `src/theme/spotify.ts`: 新建 Spotify Design Tokens，定义炭黑背景 `#121212`、卡片 `#181818`/`#282828`、品牌绿 `#1ed760`、21 种分类大磁贴色板、圆角规范（胶囊 `9999`、卡片 `8/12`）与字阶体系；
+  - `src/theme/themes/createThemes.js`: 新增并置顶 `spotify_dark` 主题配置；
+  - `src/theme/themes/themes.ts`: 执行 `npm run build:theme` 重新编译生成主题核心配置；
+  - `src/config/defaultSetting.ts`: 将全局默认主题切换为 `spotify_dark` 并锁定深色背景；
+  - `src/theme/themes/index.ts`: 更新 fallback 逻辑为 `spotify_dark`；
+  - `src/theme/index.js`: 导出全局 Spotify Tokens。
+- **影响范围与破坏性变更**: 应用默认主题全面切换为 Spotify Pure Dark，无破坏性改动。
+- **待办 / 后续注意事项**: 接下来进入 Phase 2：构建底部 3-Tab 导航（Home/Search/Library）与悬浮 Mini Player 胶囊卡片。
+
+### [2026-10-09] Phase 2 落地：底部 3-Tab 原生导航与悬浮 Mini Player 胶囊
+- **执行人 / Agent**: Antigravity (Pair Programming Assistant)
+- **需求背景 / 变更目的**: 搭建 Spotify 核心骨架（3-Tab 底部栏 + 浮动胶囊 Mini Player），替换原有的固定底部工具条。
+- **核心修改清单**:
+  - `src/store/list/hook.ts`: 新增 `useIsLoveMusic(musicId)` hook，实现当前播放歌曲实时收藏状态监听；
+  - `src/components/common/SpotifyTabBar.tsx`: 新建 Spotify 经典 3-Tab 原生导航栏（Home / Search / Your Library），集成深色半透明背景与图标高亮；
+  - `src/components/player/PlayerBar/index.tsx`: 深度重构为 Spotify 悬浮小胶囊（Floating Pill），包含圆角专辑图、歌曲/歌手文本流、绿心收藏按键（`isLove` 实时切换）、播放暂停按键、下一曲按键与底部 2px 细微进度线，点击整条平滑推入全屏播放页；
+  - `src/screens/Home/Vertical/index.tsx`: 将 `SpotifyTabBar` 与悬浮 Mini Player 正确挂载到应用主视图中。
+- **影响范围与破坏性变更**: 底部播放控制与主导航整体升级为 Spotify 交互形态。
+- **待办 / 后续注意事项**: 接下来进入 Phase 3：重构 Home 首页（2x3 问候胶囊 + 推荐歌单/歌手横向滑动卡片流）。
+
+### [2026-10-09] Phase 3 落地：Home 首页重构为 Spotify 现代卡片流
+- **执行人 / Agent**: Antigravity (Pair Programming Assistant)
+- **需求背景 / 变更目的**: 替换原旧式列表首页，实现 Spotify 标志性的问候语、2x3 常用入口胶囊网格、为你推荐横向卡片流与热门歌手圆形头像流。
+- **核心修改清单**:
+  - `src/screens/Home/Views/SpotifyHome/index.tsx`: 打造全新 SpotifyHome 组件：
+    1. 顶部动态问候语（`Good morning / afternoon / evening`）+ 右上角设置入口；
+    2. 2x3 常用胶囊网格（快速直达我喜欢的音乐、默认列表、本地列表等）；
+    3. 为你推荐 / 精选歌单水平横向滑动卡片流（正方形圆角大封面 + 副标题）；
+    4. 热门歌手正圆形头像轮播卡片（110px 圆形卡片 + 居中姓名）；
+  - `src/screens/Home/Vertical/Main.tsx`: 挂载 `SpotifyHome` 作为首页主视图；
+  - `src/screens/Home/Vertical/Header.tsx`: 在首页模式下隐藏冗余的传统抽屉 Header，提供沉浸式全屏体验。
+- **影响范围与破坏性变更**: 首页视觉全面进化为 Spotify 现代卡片瀑布流。
+- **待办 / 后续注意事项**: 接下来进入 Phase 4：重构 Search 探索页（21 色大磁贴网格）与 Your Library 音乐库。
+
+### [2026-10-09] Phase 4 落地：Search 探索页大磁贴与 Your Library 音乐库重构
+- **执行人 / Agent**: Antigravity (Pair Programming Assistant)
+- **需求背景 / 变更目的**: 重构搜索探索体验（Browse All 彩色大磁贴）与音乐库结构化管理（整合收藏、自建歌单与已下载）。
+- **核心修改清单**:
+  - `src/screens/Home/Views/Search/BlankView/BrowseCategories.tsx`: 创建 Spotify 风格 2 列分类大彩色磁贴网格（Pop, Rock, Hip-Hop, Chill, EDM 等），支持点击快速触发分类搜索；
+  - `src/screens/Home/Views/Search/BlankView/index.tsx`: 将 `BrowseCategories` 挂载至搜索空白页；
+  - `src/screens/Home/Views/Mylist/SpotifyLibrary.tsx`: 打造 Spotify 现代音乐库组件：
+    1. 顶部胶囊筛选 Pills（`All`, `Playlists`, `Downloaded`）；
+    2. 整合「Liked Songs（我喜欢的音乐）」专属暗紫渐变卡片与下载专区；
+    3. 支持无缝查看歌单详情与播放控制；
+  - `src/screens/Home/Vertical/Main.tsx`: 挂载 `SpotifyLibrary` 作为音乐库主视图；
+  - `src/components/common/SpotifyTabBar.tsx`: 对齐 3-Tab 路由与 PagerView 页面映射。
+- **影响范围与破坏性变更**: 搜索与音乐库整体升级为 Spotify 交互形态。
+- **待办 / 后续注意事项**: 至此 Phase 1 ~ Phase 4 核心视觉与交互骨架已全部顺利落地，可进行全量体验验证与细部打磨。
+
+### [2026-10-09] 错误与逻辑漏洞排查、UI 资源同步与《音河 MeloRiver》README 重构
+- **执行人 / Agent**: Antigravity (Pair Programming Assistant)
+- **需求背景 / 变更目的**: 
+  1. 对全部改动代码进行错误排查与逻辑漏洞自检；
+  2. 将 `spotify-clone` 的核心 UI 资产（字体、图标、缺省图片）完整迁移到当前工程中；
+  3. 基于 `readme-test.md` 结合当前真实架构，重构项目根目录 `README.md`。
+- **核心修改清单**:
+  - **排查与代码规范优化**：
+    - `src/screens/Home/Vertical/Main.tsx`: 清理了中间冗余的 import 语句，将所有依赖规范移至文件头部；
+    - `src/screens/Home/Vertical/Header.tsx`: 统一对 `nav_songlist`（首页）与 `nav_love`（音乐库）隐藏旧式抽屉顶栏，保留 StatusBar；
+    - `src/components/common/SpotifyTabBar.tsx`: 确保 3-Tab 路由与 PagerView 页面精准映射，避免未定义状态；
+  - **UI 资源归档**：
+    - 将 `spotify-clone/assets/` 下的 `images/`、`icons/` 与 `fonts/` 完整复制至 `src/resources/spotify-assets/`，作为缺省封面与矢量资产；
+  - **README 重构**：
+    - `README.md`: 采用《音河 MeloRiver》诗意文案与现代排版，精准呈现 React Native + QuickJS 沙箱 + Hermes + Spotify 3-Tab 交互架构，并串联 `operation.md`、`agent.md`、`design.md` 与 `log.md`。
+- **影响范围与破坏性变更**: 无，工程代码与文档处于高度一致且规范的状态。
+- **待办 / 后续注意事项**: 随时可进行打包测试与功能扩展。
+
+
+
+
+
+
+
+
