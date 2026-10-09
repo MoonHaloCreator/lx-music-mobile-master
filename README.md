@@ -71,43 +71,6 @@
 
 ---
 
-## 🏗️ 技术架构
-
-```mermaid
-flowchart TD
-  subgraph UI [表现层 (Presentation Layer)]
-    Home["SpotifyHome (2x3 胶囊 / 推荐轮播 / 歌手流)"]
-    Search["Search & BrowseCategories (21 色分类磁贴)"]
-    Library["SpotifyLibrary (结构化音乐库 / Downloaded)"]
-    MiniPlayer["Spotify Floating Mini Player (悬浮小胶囊)"]
-    PlayDetail["PlayDetail (全屏播放器 / 实时滚动歌词)"]
-  end
-
-  subgraph Core [核心调度层 (Core Services)]
-    PlayerCore["Player Core (播放状态机 / 切歌策略)"]
-    ListCore["List Core (歌单管理 / 收藏状态 / 导入导出)"]
-    UserApiCore["UserAPI Core (音源调度 / 脚本通信)"]
-  end
-
-  subgraph State [状态与事件层 (State & Event Bus)]
-    Store["Global Store (Player / List / Theme / Setting)"]
-    EventBus["Event Bus (播放进度 / 列表刷新 / 主题响应)"]
-  end
-
-  subgraph Native [原生能力与沙箱层 (Native & Engine)]
-    TrackPlayer["Native TrackPlayer (ExoPlayer + Notification)"]
-    QuickJS["QuickJS Android Sandbox (User API 脚本执行环境)"]
-    Storage["AsyncStorage (Room SQLite) + 本地文件系统"]
-  end
-
-  UI --> Core
-  Core --> State
-  Core --> Native
-  State -.-> UI
-```
-
----
-
 ## 🛠️ 快速开始与打包
 
 ### 环境准备
