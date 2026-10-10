@@ -1,6 +1,6 @@
-# LX Music Mobile (落雪音乐移动版) - Android APK 打包与构建指南
+# 音河 MeloRiver (LX Music Mobile) - Android APK 打包与构建指南
 
-本文档详细介绍了如何从零准备环境并将本项目（`lx-music-mobile`）打包为 Android `.apk` 安装包。
+本文档详细介绍了如何从零准备环境并将 **音河（MeloRiver / LX Music Mobile）** 编译打包为 Android `.apk` 正式安装包。
 
 ---
 
@@ -8,7 +8,7 @@
 1. [环境要求与前置准备](#1-环境要求与前置准备)
 2. [环境配置与依赖安装](#2-环境配置与依赖安装)
 3. [签名密钥 (Keystore) 配置](#3-签名密钥-keystore-配置)
-4. [项目打包指令与流程](#4-项目打包指令与流程)
+4. [项目打包指令与全流程](#4-项目打包指令与全流程)
 5. [打包产物路径与架构说明](#5-打包产物路径与架构说明)
 6. [常见构建问题与排查指南](#6-常见构建问题与排查指南)
 
@@ -16,18 +16,18 @@
 
 ## 1. 环境要求与前置准备
 
-本项目基于 **React Native 0.73.11**，请确保本地开发环境满足以下版本要求：
+本项目基于 **React Native 0.73.11** 构建，请确保本地开发环境满足以下版本要求：
 
 | 工具 / 组件 | 推荐 / 要求版本 | 备注 |
 | :--- | :--- | :--- |
-| **Operating System** | Windows 10/11, macOS, Linux | 本指南以 Windows / PowerShell 为主 |
+| **Operating System** | Windows 10/11, macOS, Linux | 本指南以 Windows / PowerShell 为基准 |
 | **Node.js** | `>= 18.0.0` (推荐 18.x 或 20.x LTS) | 通过 `node -v` 验证 |
 | **npm** | `>= 8.5.2` | 通过 `npm -v` 验证 |
-| **JDK (Java)** | **JDK 17** (Temurin / Zulu / OpenJDK 17) | Gradle 8.6+ 适配版本 |
-| **Android SDK** | Compile SDK: `36`, Target SDK: `29`, Min SDK: `21` | Android Studio 安装 |
+| **JDK (Java)** | **JDK 17** (Temurin / Zulu / OpenJDK 17) | Gradle 8.6+ 官方适配版本 |
+| **Android SDK** | Compile SDK: `36`, Target SDK: `29`, Min SDK: `21` | 通过 Android Studio SDK Manager 安装 |
 | **Android Build-Tools** | `35.0.0` | 在 SDK Tools 中勾选安装 |
 | **Android NDK** | `26.1.10909125` | 必须精确匹配 `android/build.gradle` 中的 ndkVersion |
-| **Gradle** | `8.6.1` (由自带的 `gradlew` 自动拉取) | |
+| **Gradle** | `8.6.1` (由自带的 `gradlew` 自动拉取) | 项目内嵌 |
 
 ### 环境变量检查清单
 确保系统环境变量已正确配置：
@@ -49,10 +49,11 @@ npm install
 ```
 > **注意**：项目 `package.json` 中配置了部分 GitHub 依赖和 override 规则，请确保网络通畅。
 
-### 步骤 2：生成主题资源（如修改了主题）
+### 步骤 2：编译生成 Spotify 全局主题资源（打包前必须执行）
 ```bash
 npm run build:theme
 ```
+> **重要**：此命令会基于 `src/theme/themes/createThemes.js` 重新生成全局 `spotify_dark` 主题与 Design Tokens 索引文件 `src/theme/themes/themes.ts`。
 
 ---
 
@@ -60,11 +61,11 @@ npm run build:theme
 
 在编译正式版 Release APK 时，需要使用签名证书。本项目支持两种签名配置方式：
 
-### 方式 A：使用 `keystore.properties`（推荐）
+### 方式 A：使用 `keystore.properties`（正式发布推荐）
 
 #### 1. 生成签名文件（若已有可跳过）
-在命令行中执行以下命令（以 Windows cmd/powershell 为例）：
-```bash
+在命令行中执行以下命令（以 Windows PowerShell 为例）：
+```powershell
 keytool -genkeypair -v -storetype PKCS12 -keystore android/app/my-release-key.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000
 ```
 *按提示输入密码（如 `123456`）、姓名、组织等信息。*
@@ -83,18 +84,21 @@ storeFile=app/my-release-key.keystore
 
 ---
 
-## 4. 项目打包指令与流程
+## 4. 项目打包指令与全流程
 
 ### 4.1 打包 Release APK（正式版）
 
-直接使用 package.json 中预置的指令：
+直接使用根目录预置的 npm 指令：
 
 ```bash
-# 执行 Release 构建
+# 1. 确保主题资源最新
+npm run build:theme
+
+# 2. 执行 Android Release 构建
 npm run pack:android
 ```
 或者手动进入 `android` 目录运行：
-```bash
+```powershell
 # Windows
 cd android
 .\gradlew.bat assembleRelease
@@ -104,21 +108,21 @@ cd android
 ./gradlew assembleRelease
 ```
 
-### 4.2 打包 Debug APK（调试版）
+### 4.2 打包 Debug APK（开发调试版）
 
 ```bash
 # 执行 Debug 构建
 npm run pack:android:debug
 ```
 或者：
-```bash
+```powershell
 cd android
 .\gradlew.bat assembleDebug
 ```
 
-### 4.3 仅构建指定 CPU 架构的 APK（加快构建速度）
-在调试或测试时，如果只需特定架构（如 `arm64-v8a`），可以通过命令行参数覆盖：
-```bash
+### 4.3 仅构建指定 CPU 架构的 APK（加速构建）
+如果仅需构建特定手机架构（如主流 64 位 `arm64-v8a`），可以通过命令行参数覆盖以大幅缩短编译时间：
+```powershell
 cd android
 .\gradlew.bat assembleRelease -PreactNativeArchitectures=arm64-v8a
 ```
@@ -136,7 +140,7 @@ cd android && .\gradlew.bat clean
 
 ## 5. 打包产物路径与架构说明
 
-构建完成后，生成的 APK 文件位于：
+构建完成后，生成的 APK 文件统一位于：
 ```
 android/app/build/outputs/apk/release/
 ```
@@ -145,11 +149,11 @@ android/app/build/outputs/apk/release/
 
 | 文件名示例 | 适用设备 / 架构 | 说明 |
 | :--- | :--- | :--- |
-| `lx-music-mobile-v1.9.1-arm64-v8a.apk` | 绝大多数现代 64 位 Android 手机 | 体积小，性能最优（推荐大多数用户） |
+| `lx-music-mobile-v1.9.1-arm64-v8a.apk` | 绝大多数现代 64 位 Android 手机 | 体积小、启动与运行性能最优（**推荐绝大多数用户**） |
 | `lx-music-mobile-v1.9.1-armeabi-v7a.apk` | 老款 32 位 Android 手机 / 某些车机 | 兼容旧设备 |
 | `lx-music-mobile-v1.9.1-x86_64.apk` | 64 位 x86 架构（PC 模拟器、部分平板） | 模拟器常用 |
 | `lx-music-mobile-v1.9.1-x86.apk` | 32 位 x86 架构（旧版 PC 模拟器） | 较少使用 |
-| `lx-music-mobile-v1.9.1-universal.apk` | **通用全架构包** | 包含所有 CPU 架构库，体积最大，兼容性最广 |
+| `lx-music-mobile-v1.9.1-universal.apk` | **通用全架构包** | 包含所有 CPU 架构库，兼容性最广，体积相对较大 |
 
 ---
 
@@ -161,22 +165,30 @@ android/app/build/outputs/apk/release/
 
 ### Q2: 报错 `Out of Memory` / Java Heap Space
 - **原因**：Gradle 守护进程内存不足。
-- **解决**：检查 `android/gradle.properties`，确保 `org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=2048m`。
+- **解决**：检查 `android/gradle.properties`，确保已配置：
+  ```properties
+  org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=2048m
+  ```
 
 ### Q3: Hermes 引擎或 JS Bundle 打包失败
 - **解决**：
-  1. 运行 `npm run sc`（清空 Metro 缓存并启动）；
-  2. 单独测试 Bundle 生成命令：
+  1. 运行 `npm run sc`（清空 Metro 缓存并重新启动）；
+  2. 单独测试 JS Bundle 生成命令：
      ```bash
      npm run bundle-android
      ```
   3. 检查是否有 TypeScript 语法错误或未引入的第三方模块。
 
-### Q4: Wix Navigation (`react-native-navigation`) 编译报错
+### Q4: 主题或静态资源未生效
+- **解决**：
+  1. 确保在打包前运行了 `npm run build:theme`；
+  2. 静态资源（位于 `src/resources/spotify-assets`）会在 Metro bundle 阶段自动被打包至 APK assets 目录，无需额外配置。
+
+### Q5: Wix Navigation (`react-native-navigation`) 编译报错
 - **解决**：本项目在 `package.json` 的 `overrides` 中锁定了 `lodash` 和 `@typescript-eslint` 相关依赖，且在 `android/build.gradle` 中指定了 Kotlin 版本 `1.9.24`。若报错，请删除 `node_modules` 与 `android/.gradle`，重新执行 `npm install`。
 
-### Q5: 国内网络环境下 Gradle 依赖下载超时
-- **解决**：可在 `android/build.gradle` 的 `repositories` 中配置阿里云镜像源：
+### Q6: 国内网络环境下 Gradle 依赖下载超时
+- **解决**：可在 `android/build.gradle` 的 `repositories` 中配置国内镜像加速源：
   ```groovy
   maven { url 'https://maven.aliyun.com/repository/google' }
   maven { url 'https://maven.aliyun.com/repository/public' }
