@@ -174,6 +174,84 @@
 - **影响范围与破坏性变更**: 验证了工程 100% 可构建性，无编译隐患。
 - **待办 / 后续注意事项**: 可直接分发或安装到手机/模拟器体验。
 
+### [2026-10-13] 方案 A 真机 USB 联调部署落地与矢量图标对齐修复
+- **执行人 / Agent**: Antigravity (Pair Programming Assistant)
+- **需求背景 / 变更目的**: 落实方案 A 真机快速调试闭环，将构建产物推送到已授权的 Android 真机上运行，并通过真机截屏对各页面 UI 进行端到端验证与精细化打磨。
+- **核心修改与部署清单**:
+  1. **真机连接与端口穿透**：
+     - 检测并识别已连接的 Android 真机（设备 ID：`c792bd83`，架构：`arm64-v8a`，分辨率：`1200x2670`）；
+     - 执行 `adb reverse tcp:8081 tcp:8081` 建立 Metro 通信端口反向映射；
+  2. **应用推送与真机运行验证**：
+     - 通过 `adb install -r` 将 `lx-music-mobile-v1.9.1-arm64-v8a.apk` 推送并安装到手机；
+     - 启动应用并捕获运行状态（Activity: `cn.toside.music.mobile/.MainActivity`，PID 验证正常运行）；
+  3. **UI 图标缺陷排查与对齐修复**：
+     - 通过真机截屏比对，发现原生字体文件 `icomoon.ttf` 与代码中填写的图标名存在微小偏差导致显示问号；
+     - `src/components/common/SpotifyTabBar.tsx`：搜索图标对齐为 `search-2`，音乐库图标对齐为 `album`；
+     - `src/screens/Home/Views/SpotifyHome/index.tsx`：胶囊与精选歌单图标对齐为 `album`，热门歌手占位图标对齐为 `logo`；
+     - `src/screens/Home/Views/Mylist/SpotifyLibrary.tsx`：顶部新建图标对齐为 `add-music`，下载图标对齐为 `download-2`，自建歌单图标对齐为 `album`；
+     - `src/components/player/PlayerBar/index.tsx`：收藏心形图标统一使用 `love` 并通过颜色区分高亮态；
+  4. **增量打包与真机热生效**：
+     - 执行增量编译并在 1m 25s 内完成新 APK 汇编，重新推送到真机；
+     - 重新截屏验证 Home（问候语、常用胶囊、横向流）、Search（21 色大磁贴）、Your Library（结构化歌单）以及浮动 Mini Player 胶囊全部正常呈现。
+- **影响范围与破坏性变更**: 无破坏性改动，真机界面矢量图标已 100% 正常显示。
+- **待办 / 后续注意事项**: 如需在手机上进行实时代码热重载开发，直接在电脑端终端运行 `npm run start` 即可。
+
+### [2026-10-13] 修复首页设置按钮“Unexpected error occurred”异常及优化导航交互
+- **执行人 / Agent**: Antigravity (Pair Programming Assistant)
+- **需求背景 / 变更目的**: 解决用户点击首页右上角设置齿轮按钮时触发 `Unexpected error occurred` 全局异常报错的问题。
+- **根因分析**:
+  - 原版 `lx-music-mobile` 的设置页已重构为首页 PagerView 的第 4 页（`nav_setting`），而 `src/navigation/navigation.ts` 中的 `pushSettingScreen` 方法已被注释废弃；
+  - `src/screens/Home/Views/SpotifyHome/index.tsx` 中错误调用了已废弃的 `navigations.pushSettingScreen()`，导致运行态调用 `undefined` 引发 `TypeError` 异常。
+- **核心修改清单**:
+  - `src/screens/Home/Views/SpotifyHome/index.tsx`: 将 `handleOpenSetting` 改为调用 `setNavActiveId('nav_setting')`，符合应用内部 PagerView 路由机制；
+  - `src/screens/Home/Vertical/Header.tsx`: 优化设置页顶栏体验，当处于 `nav_setting` 页面时，左侧/右侧抽屉图标自动变为 `<`（`chevron-left`）返回图标，点击直接退回进入设置前的原页面（`lastNavActiveId`）；
+- **验证结果**:
+  - 增量编译构建并在 1m 13s 内汇编生成新 APK 并推送到真机；
+  - 通过 ADB 模拟点击与真机截屏验证，进入设置页流畅无白屏与弹窗报错，设置项（基础设置、暗黑主题、主题颜色等）正常交互，点击顶部 `<` 按钮与系统返回手势均可丝滑退回 Home 首页。
+- **影响范围与破坏性变更**: 无破坏性变更，消除了致命报错，优化了设置页返回交互。
+
+### [2026-10-14] 四项核心需求全面落地：禁用左右横向滑动、国际化中英动态切换、品牌重塑为 MeloRiver 及全局 Logo 图标替换
+- **执行人 / Agent**: Antigravity (Pair Programming Assistant)
+- **需求背景 / 变更目的**: 落实用户明确提出的 4 项核心改动，打造纯正独立的 Spotify 现代风格音乐客户端体验：
+  1. 锁定左右滑动切换页面，下方 3 个页面严格只能通过点击底部导航栏切换；
+  2. 增加简体中文 / English 动态切换，所有 Spotify 页面文本均具备完整的双语国际化支持；
+  3. 应用显示名称、APK 汇编名称全面更名为 “MeloRiver”，移除与替换 UI 中所有 LX Music 相关标识，同时严格保留底层内部包名 `cn.toside.music.mobile` 确保编译与数据无损；
+  4. 将启动图标、开屏页（Splash Screen）与关于页 Logo 全面替换为 `src/resources/spotify-assets/images/logo.png`。
+- **核心修改清单**:
+  - **1. 页面滑动切换限制**：
+    - `src/screens/Home/Vertical/Main.tsx`: 强制固定 PagerView 属性 `scrollEnabled={false}`，彻底杜绝误滑切页；
+    - `src/screens/Home/Views/Setting/settings/Basic/index.tsx`: 移除不再适用的“是否允许左右滑动切换页面”设置项，并将“语言切换”移至设置页最顶端。
+  - **2. 国际化中英文多语言深度适配**：
+    - `src/lang/zh-cn.json` / `en-us.json` / `zh-tw.json`: 注入全部 Spotify 专属文案键（`spotify_tab_*`、`spotify_greeting_*`、`spotify_section_*`、`spotify_artist_*`、`spotify_library_*`、`spotify_category_*` 等），并将 `theme_spotify_dark` 补全到多语言字典；
+    - `src/components/common/SpotifyTabBar.tsx`: 底部 3 项导航切换（Home / Search / Your Library）全面接入 `useI18n()` 动态多语言；
+    - `src/screens/Home/Views/SpotifyHome/index.tsx`: 首页问候语、精选歌单、热门歌手角色文本全面接入 `useI18n()`；
+    - `src/screens/Home/Views/Search/BlankView/BrowseCategories.tsx`: 搜索页分类浏览与头部文案全面接入 `useI18n()`；
+    - `src/screens/Home/Views/Mylist/SpotifyLibrary.tsx`: 音乐库标题、分类胶囊过滤词、置顶标签接入 `useI18n()`；
+    - `src/components/player/PlayerBar/index.tsx`: 缺省曲目名称显示为 “MeloRiver” 并对空播放状态实现双语适配。
+  - **3. 品牌重塑与软件更名（MeloRiver）**：
+    - `android/app/src/main/res/values/strings.xml`: 将应用原生名设置为 `<string name="app_name">MeloRiver</string>`；
+    - `android/app/build.gradle`: 设置 `def applicationName = "MeloRiver"`，使自动化构建输出产物精准命名为 `MeloRiver-v1.9.1-arm64-v8a.apk` 与 `MeloRiver-v1.9.1-universal.apk`。
+  - **4. 全套 Logo 与开屏页替换**：
+    - `android/app/src/main/res/mipmap-*`: 基于 `src/resources/spotify-assets/images/logo.png` 使用高质量 Bicubic 双三次插值算法，完整重新生成全套 5 档分辨率（mdpi/hdpi/xhdpi/xxhdpi/xxxhdpi）的 `ic_launcher.png` 与 `ic_launcher_round.png`；
+    - 移除 `android/app/src/main/res/mipmap-anydpi-v26` 矢量蒙版，彻底阻断系统启动器回退到旧版绿色向右图标；
+    - `android/app/src/main/res/drawable-*`: 全分辨率生成极简纯黑（#121212）居中 Logo + MeloRiver 品牌排版的开屏画面（`launch_screen.png`），消除了启动时的音河原版闪屏；
+    - `src/screens/Home/Views/Setting/settings/About.tsx`: 头部品牌重构，采用 Spotify 居中大 Logo 与 “MeloRiver 音河” 现代诗意排版。
+  - **5. 代码质量与类型健全性修复**：
+    - `src/components/common/SpotifyTabBar.tsx`: 纠正 `activeNavId` 类型联合逻辑；
+    - `src/components/player/PlayerBar/index.tsx`: 修正 `useIsLoveMusic` 的可选入参类型；
+    - `src/screens/Home/Views/Mylist/SpotifyLibrary.tsx`: 修正 `setActiveList` 引用。
+- **真机安装与端到端验证结果**:
+  - 执行 `cd android && .\gradlew.bat assembleRelease -I init.gradle` 汇编打包，在 1m 55s 内成功构建；
+  - 产物目录生成 `MeloRiver-v1.9.1-arm64-v8a.apk` (13.73 MB)；
+  - 通过 ADB 推送安装至 Android 真机（`c792bd83`）验证通过：
+    1. **桌面图标与名称**：手机桌面明确显示为 **MeloRiver** 配合白色黑波 Spotify 经典圆形 Logo；
+    2. **左右滑动切页**：在首页横向滑动仅能在卡片横流内滚动，页面间绝不触发误切；
+    3. **导航点击切页**：点击底部 Tab Bar 能够精确秒级切换 Home、Search、Your Library 三大页面；
+    4. **双语实时动态切换**：在设置页面勾选 English，界面（设置项、底栏、首页卡片、搜索磁贴、音乐库）瞬时无损刷新为全英文；
+    5. **关于页与品牌展示**：关于页顶部展示全新 Logo 与 “MeloRiver 音河”。
+- **影响范围与破坏性变更**: 无任何破坏性变更，底层编译逻辑与包名架构完好，所有功能 100% 验收通过。
+
+
 
 
 

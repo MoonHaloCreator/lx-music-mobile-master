@@ -10,9 +10,10 @@ import { Icon } from '@/components/common/Icon'
 import { SPOTIFY_COLORS, SPOTIFY_RADIUS } from '@/theme/spotify'
 import { useMyList, useActiveListId } from '@/store/list/hook'
 import { useStatusbarHeight } from '@/store/common/hook'
-import { setMyListActiveId } from '@/core/list'
+import { setActiveList } from '@/core/list'
 import { scaleSizeH, scaleSizeW } from '@/utils/pixelRatio'
 import { LIST_IDS } from '@/config/constant'
+import { useI18n } from '@/lang'
 import MusicList from './MusicList'
 
 type FilterType = 'all' | 'playlists' | 'downloaded'
@@ -21,12 +22,13 @@ export default memo(() => {
   const statusBarHeight = useStatusbarHeight()
   const myLists = useMyList()
   const activeListId = useActiveListId()
+  const t = useI18n()
   const [filter, setFilter] = useState<FilterType>('all')
   const [showDetail, setShowDetail] = useState(false)
 
   // 点击歌单切换进入歌曲详情列表
   const handleSelectList = (listId: string) => {
-    setMyListActiveId(listId)
+    setActiveList(listId)
     setShowDetail(true)
   }
 
@@ -61,7 +63,7 @@ export default memo(() => {
     <View style={[styles.container, { paddingTop: statusBarHeight + scaleSizeH(16) }]}>
       {/* 顶部标题与新建按钮 */}
       <View style={styles.headerRow}>
-        <Text style={styles.pageTitle}>Your Library</Text>
+        <Text style={styles.pageTitle}>{t('spotify_library_title')}</Text>
         <TouchableOpacity
           style={styles.addBtn}
           activeOpacity={0.7}
@@ -70,7 +72,7 @@ export default memo(() => {
             global.app_event.changeLoveListVisible(true)
           }}
         >
-          <Icon name="add" size={24} color={SPOTIFY_COLORS.WHITE} />
+          <Icon name="add-music" size={24} color={SPOTIFY_COLORS.WHITE} />
         </TouchableOpacity>
       </View>
 
@@ -78,7 +80,7 @@ export default memo(() => {
       <View style={styles.pillsRow}>
         {(['all', 'playlists', 'downloaded'] as FilterType[]).map((tab) => {
           const isActive = filter === tab
-          const label = tab === 'all' ? 'All' : tab === 'playlists' ? 'Playlists' : 'Downloaded'
+          const label = tab === 'all' ? t('spotify_library_all') : tab === 'playlists' ? t('spotify_library_playlists') : t('spotify_library_downloaded')
           return (
             <TouchableOpacity
               key={tab}
@@ -128,7 +130,7 @@ export default memo(() => {
                 ]}
               >
                 <Icon
-                  name={isLove ? 'love' : isDownload ? 'download' : 'my-list'}
+                  name={isLove ? 'love' : isDownload ? 'download-2' : 'album'}
                   size={24}
                   color={isLove ? SPOTIFY_COLORS.TINT : SPOTIFY_COLORS.WHITE}
                 />
@@ -140,7 +142,7 @@ export default memo(() => {
                   {item.name}
                 </Text>
                 <Text style={styles.itemSubtitle}>
-                  {isLove ? 'Pinned • ' : ''}Playlist
+                  {isLove ? `${t('spotify_library_pinned')}` : t('spotify_library_playlist')}
                 </Text>
               </View>
             </TouchableOpacity>

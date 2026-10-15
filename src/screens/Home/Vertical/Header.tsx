@@ -12,7 +12,8 @@ import StatusBar from '@/components/common/StatusBar'
 import { useSettingValue } from '@/store/setting/hook'
 import { scaleSizeH } from '@/utils/pixelRatio'
 import { HEADER_HEIGHT } from '@/config/constant'
-import { type InitState as CommonState } from '@/store/common/state'
+import commonState, { type InitState as CommonState } from '@/store/common/state'
+import { setNavActiveId } from '@/core/common'
 import SearchTypeSelector from '@/screens/Home/Views/Search/SearchTypeSelector'
 
 const headerComponents: Partial<Record<CommonState['navActiveId'], React.ReactNode>> = {
@@ -32,8 +33,13 @@ const LeftHeader = () => {
   const t = useI18n()
   const statusBarHeight = useStatusbarHeight()
 
-  const openMenu = () => {
-    global.app_event.changeMenuVisible(true)
+  const isSetting = id === 'nav_setting'
+  const handleLeftPress = () => {
+    if (isSetting) {
+      setNavActiveId(commonState.lastNavActiveId || 'nav_songlist')
+    } else {
+      global.app_event.changeMenuVisible(true)
+    }
   }
 
   return (
@@ -43,10 +49,10 @@ const LeftHeader = () => {
       paddingTop: statusBarHeight,
     }}>
       <View style={styles.left}>
-        <TouchableOpacity style={styles.btn} onPress={openMenu}>
-          <Icon color={theme['c-font']} name="menu" size={18} />
+        <TouchableOpacity style={styles.btn} onPress={handleLeftPress}>
+          <Icon color={theme['c-font']} name={isSetting ? 'chevron-left' : 'menu'} size={18} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.titleBtn} onPress={openMenu}>
+        <TouchableOpacity style={styles.titleBtn} onPress={handleLeftPress}>
           <Text style={styles.leftTitle} size={18}>{t(id)}</Text>
         </TouchableOpacity>
       </View>
@@ -72,8 +78,13 @@ const RightHeader = () => {
   const id = useNavActiveId()
   const statusBarHeight = useStatusbarHeight()
 
-  const openMenu = () => {
-    global.app_event.changeMenuVisible(true)
+  const isSetting = id === 'nav_setting'
+  const handlePress = () => {
+    if (isSetting) {
+      setNavActiveId(commonState.lastNavActiveId || 'nav_songlist')
+    } else {
+      global.app_event.changeMenuVisible(true)
+    }
   }
   return (
     <View style={{
@@ -82,13 +93,13 @@ const RightHeader = () => {
       paddingTop: statusBarHeight,
     }}>
       <View style={styles.left}>
-        <TouchableOpacity style={styles.titleBtn} onPress={openMenu}>
+        <TouchableOpacity style={styles.titleBtn} onPress={handlePress}>
           <Text style={styles.rightTitle} size={18}>{t(id)}</Text>
         </TouchableOpacity>
       </View>
       {headerComponents[id] ?? null}
-      <TouchableOpacity style={styles.btn} onPress={openMenu}>
-        <Icon color={theme['c-font']} name="menu" size={18} />
+      <TouchableOpacity style={styles.btn} onPress={handlePress}>
+        <Icon color={theme['c-font']} name={isSetting ? 'chevron-left' : 'menu'} size={18} />
       </TouchableOpacity>
       {/* <TouchableOpacity style={styles.btn} onPress={openSetting}>
         <Icon style={{ ...styles.btnText, color: theme['c-font'] }} name="setting" size={styles.btnText.fontSize} />

@@ -274,7 +274,7 @@ const Main = () => {
       offscreenPageLimit={1}
       onPageSelected={onPageSelected}
       onPageScrollStateChanged={onPageScrollStateChanged}
-      scrollEnabled={settingState.setting['common.homePageScroll']}
+      scrollEnabled={false}
       style={styles.pagerView}
     >
       <View collapsable={false} key="nav_search" style={styles.pageStyle}>

@@ -14,26 +14,29 @@ import { useMyList } from '@/store/list/hook'
 import { useStatusbarHeight } from '@/store/common/hook'
 import { navigations } from '@/navigation'
 import commonState from '@/store/common/state'
+import { setNavActiveId } from '@/core/common'
 import { scaleSizeH, scaleSizeW } from '@/utils/pixelRatio'
 import { LIST_IDS } from '@/config/constant'
+import { useI18n } from '@/lang'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
 export default memo(() => {
   const statusBarHeight = useStatusbarHeight()
   const myLists = useMyList()
+  const t = useI18n()
 
   // 动态计算问候语
   const greeting = useMemo(() => {
     const hour = new Date().getHours()
-    if (hour >= 5 && hour < 12) return 'Good morning'
-    if (hour >= 12 && hour < 18) return 'Good afternoon'
-    return 'Good evening'
-  }, [])
+    if (hour >= 5 && hour < 12) return t('spotify_greeting_morning')
+    if (hour >= 12 && hour < 18) return t('spotify_greeting_afternoon')
+    return t('spotify_greeting_evening')
+  }, [t])
 
   // 打开设置
   const handleOpenSetting = () => {
-    navigations.pushSettingScreen(commonState.componentIds.home ?? 'home')
+    setNavActiveId('nav_setting')
   }
 
   // 点击 2x3 胶囊歌单
@@ -63,45 +66,45 @@ export default memo(() => {
     return [
       {
         id: LIST_IDS.LOVE,
-        title: 'Liked Songs',
-        subtitle: 'Playlist • Your Favorite Tracks',
+        title: t('spotify_liked_songs'),
+        subtitle: t('spotify_liked_songs_desc'),
         image: '',
         type: 'playlist',
       },
       {
         id: LIST_IDS.DEFAULT,
-        title: 'Daily Mix 1',
-        subtitle: 'Pop, Rock & Indie vibes',
+        title: t('spotify_daily_mix_1'),
+        subtitle: t('spotify_daily_mix_1_desc'),
         image: '',
         type: 'playlist',
       },
       {
         id: 'top_hits',
-        title: 'Today\'s Top Hits',
-        subtitle: 'The hottest tracks right now',
+        title: t('spotify_top_hits'),
+        subtitle: t('spotify_top_hits_desc'),
         image: '',
         type: 'playlist',
       },
       {
         id: 'chill_vibes',
-        title: 'Chill Vibes & Beats',
-        subtitle: 'Relaxing ambient & lo-fi',
+        title: t('spotify_chill_vibes'),
+        subtitle: t('spotify_chill_vibes_desc'),
         image: '',
         type: 'playlist',
       },
     ]
-  }, [])
+  }, [t])
 
   // 热门歌手示例
   const popularArtists = useMemo(() => {
     return [
-      { id: '1', name: 'Jay Chou', followers: 'Artist' },
-      { id: '2', name: 'Taylor Swift', followers: 'Artist' },
-      { id: '3', name: 'Ed Sheeran', followers: 'Artist' },
-      { id: '4', name: 'Adele', followers: 'Artist' },
-      { id: '5', name: 'Billie Eilish', followers: 'Artist' },
+      { id: '1', name: 'Jay Chou', followers: t('spotify_artist_role') },
+      { id: '2', name: 'Taylor Swift', followers: t('spotify_artist_role') },
+      { id: '3', name: 'Ed Sheeran', followers: t('spotify_artist_role') },
+      { id: '4', name: 'Adele', followers: t('spotify_artist_role') },
+      { id: '5', name: 'Billie Eilish', followers: t('spotify_artist_role') },
     ]
-  }, [])
+  }, [t])
 
   return (
     <View style={styles.container}>
@@ -136,7 +139,7 @@ export default memo(() => {
             >
               <View style={styles.gridIconBox}>
                 <Icon
-                  name={item.id === LIST_IDS.LOVE ? 'love' : 'my-list'}
+                  name={item.id === LIST_IDS.LOVE ? 'love' : 'album'}
                   size={20}
                   color={
                     item.id === LIST_IDS.LOVE
@@ -154,7 +157,7 @@ export default memo(() => {
 
         {/* 为你推荐 / 精选歌单横向滑动流 */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Featured Playlists</Text>
+          <Text style={styles.sectionTitle}>{t('spotify_featured_playlists')}</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -168,7 +171,7 @@ export default memo(() => {
               >
                 <View style={styles.playlistCover}>
                   <Icon
-                    name="music"
+                    name="album"
                     size={36}
                     color={SPOTIFY_COLORS.LIGHT_GREY}
                   />
@@ -186,7 +189,7 @@ export default memo(() => {
 
         {/* 热门歌手正圆形头像轮播流 */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Popular Artists</Text>
+          <Text style={styles.sectionTitle}>{t('spotify_popular_artists')}</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -200,7 +203,7 @@ export default memo(() => {
               >
                 <View style={styles.artistAvatar}>
                   <Icon
-                    name="author"
+                    name="logo"
                     size={32}
                     color={SPOTIFY_COLORS.LIGHT_GREY}
                   />

@@ -2,8 +2,7 @@
 #
 .DS_Store
 
-# Xcode
-#
+# Xcode & iOS Build
 build/
 *.pbxuser
 !default.pbxuser
@@ -19,8 +18,12 @@ xcuserdata
 DerivedData
 *.hmap
 *.ipa
+*.xcarchive
 *.xcuserstate
 ios/.xcode.env.local
+/ios/assets/
+Payload/
+build_output/
 
 # Android/IntelliJ
 #
@@ -32,6 +35,8 @@ keystore.properties
 *.iml
 *.hprof
 .cxx/
+*.apk
+*.aab
 
 # node.js
 #
@@ -57,8 +62,11 @@ buck-out/
 **/fastlane/screenshots
 **/fastlane/test_output
 
-# Bundle artifact
+# Bundle & Package artifacts
 *.jsbundle
+*.bundle
+/artifacts/
+/dist/
 
 # Ruby / CocoaPods
 /ios/Pods/

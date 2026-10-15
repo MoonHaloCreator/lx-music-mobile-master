@@ -25,18 +25,17 @@ export default memo(() => {
 
   return (
     <Section title={t('setting_basic')}>
+      <Language />
       <IsStartupAutoPlay />
       <IsStartupPushPlayDetailScreen />
       <IsShowBackBtn />
       <IsShowExitBtn />
       <IsAutoHidePlayBar />
-      <IsHomePageScroll />
       <IsAllowProgressBarSeek />
       <IsUseSystemFileSelector />
       <IsAlwaysKeepStatusbarHeight />
       <Theme />
       <DrawerLayoutPosition />
-      <Language />
       <FontSize />
       <ShareType />
       <Source />

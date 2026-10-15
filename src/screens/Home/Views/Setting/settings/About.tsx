@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { View, TouchableOpacity } from 'react-native'
+import { View, TouchableOpacity, Image } from 'react-native'
 
 import Section from '../components/Section'
 // import Button from './components/Button'
@@ -10,6 +10,8 @@ import { useTheme } from '@/store/theme/hook'
 import { useI18n } from '@/lang'
 import Text from '@/components/common/Text'
 import { showPactModal } from '@/core/common'
+import { SPOTIFY_COLORS } from '@/theme/spotify'
+import { scaleSizeH, scaleSizeW } from '@/utils/pixelRatio'
 
 // const qqGroupUrl = 'mqqopensdkapi://bizAgent/qm/qr?url=http%3A%2F%2Fqm.qq.com%2Fcgi-bin%2Fqm%2Fqr%3Ffrom%3Dapp%26p%3Dandroid%26jump_from%3Dwebapi%26k%3Du1zyxek8roQAwic44nOkBXtG9CfbAxFw'
 // const qqGroupUrl2 = 'mqqopensdkapi://bizAgent/qm/qr?url=http%3A%2F%2Fqm.qq.com%2Fcgi-bin%2Fqm%2Fqr%3Ffrom%3Dapp%26p%3Dandroid%26jump_from%3Dwebapi%26k%3D-l4kNZ2bPQAuvfCQFFhl1UoibvF5wcrQ'
@@ -41,17 +43,6 @@ export default memo(() => {
     void openUrl('https://github.com/lyswhut/lx-music-mobile#%E9%A1%B9%E7%9B%AE%E5%8D%8F%E8%AE%AE')
   }
 
-  // const goToQQGroup = () => {
-  //   openUrl(qqGroupUrl).catch(() => {
-  //     void openUrl(qqGroupWebUrl)
-  //   })
-  // }
-  // const goToQQGroup2 = () => {
-  //   openUrl(qqGroupUrl2).catch(() => {
-  //     void openUrl(qqGroupWebUrl2)
-  //   })
-  // }
-
   const textLinkStyle = {
     ...styles.text,
     textDecorationLine: 'underline',
@@ -62,6 +53,15 @@ export default memo(() => {
 
   return (
     <Section title={t('setting_about')}>
+      <View style={styles.logoHeader}>
+        <Image
+          source={require('@/resources/spotify-assets/images/logo.png')}
+          style={styles.logoImage}
+          resizeMode="contain"
+        />
+        <Text style={styles.brandTitle}>MeloRiver 音河</Text>
+        <Text style={styles.brandSubtitle}>静水流深 · 随心听见每一种声音</Text>
+      </View>
       <View style={styles.part}>
         <Text style={styles.text} >本软件完全免费，代码已开源。开源地址：</Text>
         <TouchableOpacity onPress={openHomePage}>
@@ -112,7 +112,7 @@ export default memo(() => {
       </View>
       <View style={styles.part}>
         <Text style={styles.text}>By: </Text>
-        <Text style={styles.text}>落雪无痕</Text>
+        <Text style={styles.text}>YoungBoy</Text>
       </View>
     </Section>
   )
@@ -142,5 +142,26 @@ const styles = createStyle({
   },
   btn: {
     flexDirection: 'row',
+  },
+  logoHeader: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: scaleSizeH(20),
+    marginBottom: scaleSizeH(10),
+  },
+  logoImage: {
+    width: scaleSizeW(64),
+    height: scaleSizeH(64),
+    marginBottom: scaleSizeH(10),
+  },
+  brandTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: SPOTIFY_COLORS.WHITE,
+    marginBottom: scaleSizeH(4),
+  },
+  brandSubtitle: {
+    fontSize: 12,
+    color: SPOTIFY_COLORS.LIGHT_GREY,
   },
 })

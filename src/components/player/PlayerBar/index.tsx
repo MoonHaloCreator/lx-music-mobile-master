@@ -13,15 +13,17 @@ import { Icon } from '@/components/common/Icon'
 import { SPOTIFY_COLORS, SPOTIFY_RADIUS } from '@/theme/spotify'
 import { scaleSizeH, scaleSizeW } from '@/utils/pixelRatio'
 import { setLoadErrorPicUrl, setMusicInfo } from '@/core/player/playInfo'
+import { useI18n } from '@/lang'
 
 const PIC_SIZE = scaleSizeH(40)
 
 export default memo(({ isHome = false }: { isHome?: boolean }) => {
+  const t = useI18n()
   const { keyboardShown } = useKeyboard()
   const autoHidePlayBar = useSettingValue('common.autoHidePlayBar')
   const musicInfo = usePlayerMusicInfo()
   const isPlay = useIsPlay()
-  const isLove = useIsLoveMusic(musicInfo.id)
+  const isLove = useIsLoveMusic(musicInfo.id ?? undefined)
   const { progress } = useProgress(true)
 
   const handleOpenPlayDetail = () => {
@@ -45,8 +47,8 @@ export default memo(({ isHome = false }: { isHome?: boolean }) => {
 
   if (autoHidePlayBar && keyboardShown) return null
 
-  const title = musicInfo.id ? musicInfo.name : 'LX Music'
-  const singer = musicInfo.id ? (musicInfo.singer || 'Unknown Artist') : 'No track playing'
+  const title = musicInfo.id ? musicInfo.name : 'MeloRiver'
+  const singer = musicInfo.id ? (musicInfo.singer || t('spotify_unknown_artist')) : t('spotify_no_track_playing')
   const progressPercent = Math.max(0, Math.min(100, (progress || 0) * 100))
 
   return (
@@ -85,7 +87,7 @@ export default memo(({ isHome = false }: { isHome?: boolean }) => {
               onPress={handleToggleLove}
             >
               <Icon
-                name={isLove ? 'love' : 'love-o'}
+                name="love"
                 size={20}
                 color={isLove ? SPOTIFY_COLORS.TINT : SPOTIFY_COLORS.LIGHT_GREY}
               />

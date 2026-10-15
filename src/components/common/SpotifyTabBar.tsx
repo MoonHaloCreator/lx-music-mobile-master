@@ -6,15 +6,17 @@ import { Icon } from '@/components/common/Icon'
 import Text from '@/components/common/Text'
 import { SPOTIFY_COLORS } from '@/theme/spotify'
 import { scaleSizeH } from '@/utils/pixelRatio'
+import { useI18n } from '@/lang'
 
 export type SpotifyTabType = 'home' | 'search' | 'library'
 
 export default memo(() => {
   const activeNavId = useNavActiveId()
+  const t = useI18n()
 
   const isHome = activeNavId === 'nav_songlist' || activeNavId === 'nav_top'
   const isSearch = activeNavId === 'nav_search'
-  const isLibrary = activeNavId === 'nav_love' || activeNavId === 'nav_mylist'
+  const isLibrary = activeNavId === 'nav_love'
 
   const handleTabPress = (type: SpotifyTabType) => {
     switch (type) {
@@ -46,7 +48,7 @@ export default memo(() => {
           size={10}
           style={[styles.tabLabel, { color: isHome ? SPOTIFY_COLORS.WHITE : SPOTIFY_COLORS.LIGHT_GREY }]}
         >
-          Home
+          {t('spotify_tab_home')}
         </Text>
       </TouchableOpacity>
 
@@ -56,7 +58,7 @@ export default memo(() => {
         onPress={() => handleTabPress('search')}
       >
         <Icon
-          name="search"
+          name="search-2"
           size={22}
           color={isSearch ? SPOTIFY_COLORS.WHITE : SPOTIFY_COLORS.LIGHT_GREY}
         />
@@ -64,7 +66,7 @@ export default memo(() => {
           size={10}
           style={[styles.tabLabel, { color: isSearch ? SPOTIFY_COLORS.WHITE : SPOTIFY_COLORS.LIGHT_GREY }]}
         >
-          Search
+          {t('spotify_tab_search')}
         </Text>
       </TouchableOpacity>
 
@@ -74,7 +76,7 @@ export default memo(() => {
         onPress={() => handleTabPress('library')}
       >
         <Icon
-          name="my-list"
+          name="album"
           size={22}
           color={isLibrary ? SPOTIFY_COLORS.WHITE : SPOTIFY_COLORS.LIGHT_GREY}
         />
@@ -82,7 +84,7 @@ export default memo(() => {
           size={10}
           style={[styles.tabLabel, { color: isLibrary ? SPOTIFY_COLORS.WHITE : SPOTIFY_COLORS.LIGHT_GREY }]}
         >
-          Your Library
+          {t('spotify_tab_library')}
         </Text>
       </TouchableOpacity>
     </View>
