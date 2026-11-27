@@ -16,11 +16,12 @@ const abis = [
 ]
 
 const address = [
+  [`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest`, 'github_release'],
+  [`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases?per_page=1`, 'github_releases_list'],
   [`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/master/publish/version.json`, 'direct'],
   [`https://cdn.jsdelivr.net/gh/${REPO_OWNER}/${REPO_NAME}@master/publish/version.json`, 'direct'],
   [`https://fastly.jsdelivr.net/gh/${REPO_OWNER}/${REPO_NAME}@master/publish/version.json`, 'direct'],
   [`https://gcore.jsdelivr.net/gh/${REPO_OWNER}/${REPO_NAME}@master/publish/version.json`, 'direct'],
-  [`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest`, 'github_release'],
 ]
 
 
@@ -56,6 +57,18 @@ const getGithubReleaseInfo = async(url) => {
   })
 }
 
+const getGithubReleasesListInfo = async(url) => {
+  return request(url).then(list => {
+    if (!Array.isArray(list) || !list.length || !list[0]?.tag_name) throw new Error('failed')
+    const info = list[0]
+    return {
+      version: String(info.tag_name).replace(/^v/i, ''),
+      desc: info.body || '',
+      history: [],
+    }
+  })
+}
+
 export const getVersionInfo = async(index = 0) => {
   const [url, source] = address[index]
   let promise
@@ -65,6 +78,9 @@ export const getVersionInfo = async(index = 0) => {
       break
     case 'github_release':
       promise = getGithubReleaseInfo(url)
+      break
+    case 'github_releases_list':
+      promise = getGithubReleasesListInfo(url)
       break
   }
 

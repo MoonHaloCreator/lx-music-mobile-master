@@ -3,7 +3,10 @@ import { log, setUserApiList, setUserApiStatus } from '@/core/userApi'
 import settingState from '@/store/setting/state'
 import BackgroundTimer from 'react-native-background-timer'
 import { fetchData } from './request'
-import { getUserApiList } from '@/utils/data'
+import { addUserApi, getUserApiList } from '@/utils/data'
+import { getData, saveData } from '@/plugins/storage'
+import { storageDataPrefix } from '@/config/constant'
+import defaultUserApiScripts from '@/resources/defaultUserApis/scripts.json'
 import { confirmDialog, openUrl, tipDialog } from '@/utils/tools'
 
 
@@ -252,5 +255,23 @@ export default async(setting: LX.AppSetting) => {
     }
   })
 
-  setUserApiList(await getUserApiList())
+  let list = await getUserApiList()
+  const inited = await getData<boolean>(storageDataPrefix.defaultUserApiInited)
+  if (!inited) {
+    const existingNames = new Set(list.map(api => api.name))
+    for (const script of defaultUserApiScripts) {
+      const nameMatch = /@name\s+(.+)/.exec(script)
+      const scriptName = nameMatch?.[1]?.trim()
+      if (scriptName && existingNames.has(scriptName)) continue
+      try {
+        const info = await addUserApi(script)
+        existingNames.add(info.name)
+      } catch (err: any) {
+        log.r_error('init default userApi failed:', err?.message ?? err)
+      }
+    }
+    await saveData(storageDataPrefix.defaultUserApiInited, true)
+    list = await getUserApiList()
+  }
+  setUserApiList(list)
 }

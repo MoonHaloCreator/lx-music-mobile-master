@@ -9,6 +9,7 @@ import initSync from './sync'
 import initCommonState from './common'
 import { initDeeplink } from './deeplink'
 import { setApiSource } from '@/core/apiSource'
+import { state as userApiState } from '@/store/userApi'
 import commonActions from '@/store/common/action'
 import settingState from '@/store/setting/state'
 import { checkUpdate } from '@/core/version'
@@ -48,7 +49,8 @@ export default async() => {
   await initUserApi(setting)
   bootLog('User Api inited.')
 
-  setApiSource(setting['common.apiSource'])
+  const apiSource = setting['common.apiSource'] || userApiState.list[0]?.id || ''
+  setApiSource(apiSource)
   bootLog('Api inited.')
 
   registerPlaybackService()
