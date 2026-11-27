@@ -22,25 +22,25 @@ export default memo(() => {
   const theme = useTheme()
   const t = useI18n()
   const openHomePage = () => {
-    void openUrl('https://github.com/lyswhut/lx-music-mobile#readme')
+    void openUrl('https://github.com/MoonHaloCreator/lx-music-mobile-master#readme')
   }
   const openIssuePage = () => {
-    void openUrl('https://github.com/lyswhut/lx-music-mobile/issues?q=is%3Aissue+')
+    void openUrl('https://github.com/MoonHaloCreator/lx-music-mobile-master/issues?q=is%3Aissue+')
   }
   const openGHReleasePage = () => {
-    void openUrl('https://github.com/lyswhut/lx-music-mobile/releases')
+    void openUrl('https://github.com/MoonHaloCreator/lx-music-mobile-master/releases')
   }
   const openFAQPage = () => {
     void openUrl('https://lyswhut.github.io/lx-music-doc/mobile/faq')
   }
   // const openIssuesPage = () => {
-  //   openUrl('https://github.com/lyswhut/lx-music-mobile/issues')
+  //   openUrl('https://github.com/MoonHaloCreator/lx-music-mobile-master/issues')
   // }
   const openPactModal = () => {
     showPactModal()
   }
   const openPartPage = () => {
-    void openUrl('https://github.com/lyswhut/lx-music-mobile#%E9%A1%B9%E7%9B%AE%E5%8D%8F%E8%AE%AE')
+    void openUrl('https://github.com/MoonHaloCreator/lx-music-mobile-master#%E9%A1%B9%E7%9B%AE%E5%8D%8F%E8%AE%AE')
   }
 
   const textLinkStyle = {
@@ -54,18 +54,21 @@ export default memo(() => {
   return (
     <Section title={t('setting_about')}>
       <View style={styles.logoHeader}>
-        <Image
-          source={require('@/resources/spotify-assets/images/logo.png')}
-          style={styles.logoImage}
-          resizeMode="contain"
-        />
+        <View style={styles.logoWrap}>
+          <Image
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            source={require('@/resources/spotify-assets/images/logo.png')}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
+        </View>
         <Text style={styles.brandTitle}>MeloRiver 音河</Text>
         <Text style={styles.brandSubtitle}>静水流深 · 随心听见每一种声音</Text>
       </View>
       <View style={styles.part}>
         <Text style={styles.text} >本软件完全免费，代码已开源。开源地址：</Text>
         <TouchableOpacity onPress={openHomePage}>
-          <Text style={textLinkStyle}>https://github.com/lyswhut/lx-music-mobile</Text>
+          <Text style={textLinkStyle}>https://github.com/MoonHaloCreator/lx-music-mobile-master</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.part}>
@@ -149,15 +152,26 @@ const styles = createStyle({
     paddingVertical: scaleSizeH(20),
     marginBottom: scaleSizeH(10),
   },
-  logoImage: {
-    width: scaleSizeW(64),
-    height: scaleSizeH(64),
+  logoWrap: {
+    width: scaleSizeW(76),
+    height: scaleSizeW(76),
+    borderRadius: scaleSizeW(38),
+    backgroundColor: SPOTIFY_COLORS.GREEN_ALPHA_15,
+    borderWidth: 1.5,
+    borderColor: SPOTIFY_COLORS.GREEN_ALPHA_30,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: scaleSizeH(10),
+  },
+  logoImage: {
+    width: scaleSizeW(60),
+    height: scaleSizeW(60),
+    borderRadius: scaleSizeW(30),
   },
   brandTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: SPOTIFY_COLORS.WHITE,
+    color: SPOTIFY_COLORS.TINT,
     marginBottom: scaleSizeH(4),
   },
   brandSubtitle: {

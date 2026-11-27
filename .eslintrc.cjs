@@ -77,6 +77,7 @@ module.exports = {
   },
   ignorePatterns: [
     'node_modules',
+    'RN-Spotify-Clone-Redesigned-main',
     '*.min.js',
     'test.js',
     '*Test.ts',

@@ -1,11 +1,11 @@
 import { memo } from 'react'
-import { View, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Pressable, StyleSheet } from 'react-native'
 import { useNavActiveId } from '@/store/common/hook'
 import { setNavActiveId } from '@/core/common'
 import { Icon } from '@/components/common/Icon'
 import Text from '@/components/common/Text'
-import { SPOTIFY_COLORS } from '@/theme/spotify'
-import { scaleSizeH } from '@/utils/pixelRatio'
+import { SPOTIFY_COLORS, SPOTIFY_RADIUS } from '@/theme/spotify'
+import { scaleSizeH, scaleSizeW } from '@/utils/pixelRatio'
 import { useI18n } from '@/lang'
 
 export type SpotifyTabType = 'home' | 'search' | 'library'
@@ -32,61 +32,40 @@ export default memo(() => {
     }
   }
 
+  const tabs: Array<{ key: SpotifyTabType, active: boolean, icon: string, label: string }> = [
+    { key: 'home', active: isHome, icon: 'home', label: t('spotify_tab_home') },
+    { key: 'search', active: isSearch, icon: 'search-2', label: t('spotify_tab_search') },
+    { key: 'library', active: isLibrary, icon: 'album', label: t('spotify_tab_library') },
+  ]
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.tabItem}
-        activeOpacity={0.7}
-        onPress={() => handleTabPress('home')}
-      >
-        <Icon
-          name={isHome ? 'home' : 'home'}
-          size={22}
-          color={isHome ? SPOTIFY_COLORS.WHITE : SPOTIFY_COLORS.LIGHT_GREY}
-        />
-        <Text
-          size={10}
-          style={[styles.tabLabel, { color: isHome ? SPOTIFY_COLORS.WHITE : SPOTIFY_COLORS.LIGHT_GREY }]}
+      {tabs.map((tab) => (
+        <Pressable
+          key={tab.key}
+          style={({ pressed }) => [
+            styles.tabItem,
+            pressed && styles.tabItemPressed,
+          ]}
+          onPress={() => { handleTabPress(tab.key) }}
         >
-          {t('spotify_tab_home')}
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.tabItem}
-        activeOpacity={0.7}
-        onPress={() => handleTabPress('search')}
-      >
-        <Icon
-          name="search-2"
-          size={22}
-          color={isSearch ? SPOTIFY_COLORS.WHITE : SPOTIFY_COLORS.LIGHT_GREY}
-        />
-        <Text
-          size={10}
-          style={[styles.tabLabel, { color: isSearch ? SPOTIFY_COLORS.WHITE : SPOTIFY_COLORS.LIGHT_GREY }]}
-        >
-          {t('spotify_tab_search')}
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.tabItem}
-        activeOpacity={0.7}
-        onPress={() => handleTabPress('library')}
-      >
-        <Icon
-          name="album"
-          size={22}
-          color={isLibrary ? SPOTIFY_COLORS.WHITE : SPOTIFY_COLORS.LIGHT_GREY}
-        />
-        <Text
-          size={10}
-          style={[styles.tabLabel, { color: isLibrary ? SPOTIFY_COLORS.WHITE : SPOTIFY_COLORS.LIGHT_GREY }]}
-        >
-          {t('spotify_tab_library')}
-        </Text>
-      </TouchableOpacity>
+          <View style={[styles.activeIndicator, tab.active && styles.activeIndicatorVisible]} />
+          <Icon
+            name={tab.icon}
+            size={21}
+            color={tab.active ? SPOTIFY_COLORS.TINT : SPOTIFY_COLORS.LIGHT_GREY}
+          />
+          <Text
+            size={10}
+            style={[
+              styles.tabLabel,
+              { color: tab.active ? SPOTIFY_COLORS.TINT : SPOTIFY_COLORS.LIGHT_GREY },
+            ]}
+          >
+            {tab.label}
+          </Text>
+        </Pressable>
+      ))}
     </View>
   )
 })
@@ -96,8 +75,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-    height: scaleSizeH(52),
-    backgroundColor: SPOTIFY_COLORS.NAV,
+    height: scaleSizeH(54),
+    backgroundColor: SPOTIFY_COLORS.NAV_BAR,
     borderTopWidth: 1,
     borderTopColor: SPOTIFY_COLORS.DIVIDER,
     paddingBottom: 2,
@@ -107,9 +86,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     height: '100%',
+    position: 'relative',
+  },
+  tabItemPressed: {
+    opacity: 0.72,
+    transform: [{ scale: 0.96 }],
+  },
+  activeIndicator: {
+    position: 'absolute',
+    top: 0,
+    width: scaleSizeW(24),
+    height: 2.5,
+    borderRadius: SPOTIFY_RADIUS.ROUND,
+    backgroundColor: 'transparent',
+  },
+  activeIndicatorVisible: {
+    backgroundColor: SPOTIFY_COLORS.TINT,
   },
   tabLabel: {
-    marginTop: 2,
-    fontWeight: '600',
+    marginTop: 3,
+    fontWeight: '700',
   },
 })

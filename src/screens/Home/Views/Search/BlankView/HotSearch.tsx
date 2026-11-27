@@ -5,8 +5,10 @@ import Button from '@/components/common/Button'
 import { getList } from '@/core/hotSearch'
 import Text from '@/components/common/Text'
 import { createStyle } from '@/utils/tools'
-import { useTheme } from '@/store/theme/hook'
 import { useI18n } from '@/lang'
+
+
+import { SPOTIFY_COLORS, SPOTIFY_RADIUS } from '@/theme/spotify'
 
 
 interface ListProps {
@@ -23,10 +25,9 @@ const ListItem = ({ keyword, onSearch }: {
   keyword: string
   onSearch: (keyword: string) => void
 }) => {
-  const theme = useTheme()
   return (
-    <Button style={{ ...styles.button, backgroundColor: theme['c-button-background'] }} onPress={() => { onSearch(keyword) }}>
-      <Text color={theme['c-button-font']} size={13}>{keyword}</Text>
+    <Button style={styles.button} onPress={() => { onSearch(keyword) }}>
+      <Text color={SPOTIFY_COLORS.WHITE} size={13}>{keyword}</Text>
     </Button>
   )
 }
@@ -87,12 +88,15 @@ const styles = createStyle({
   },
   button: {
     textAlign: 'center',
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingTop: 5,
-    paddingBottom: 5,
-    borderRadius: 4,
-    marginRight: 10,
+    paddingLeft: 14,
+    paddingRight: 14,
+    paddingTop: 7,
+    paddingBottom: 7,
+    borderRadius: SPOTIFY_RADIUS.ROUND,
+    backgroundColor: SPOTIFY_COLORS.INPUT_BG,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    marginRight: 8,
     marginTop: 8,
   },
 })

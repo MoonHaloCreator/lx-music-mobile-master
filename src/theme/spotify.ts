@@ -8,11 +8,16 @@ export const SPOTIFY_COLORS = {
   BLACK: '#000000',
   PRIMARY: '#121212', // 纯正炭黑主背景
   SECONDARY: '#181818', // 次级暗黑卡片底色
+  SURFACE_ELEVATED: '#202020', // 悬浮卡片/容器表面色
   CARD: '#282828', // 卡片/胶囊背景色
   CARD_LIGHT: '#333333', // 浅级卡片
   CARD_PRESS: '#3E3E3E', // 点击按压反馈色
-  TINT: '#1ed760', // 品牌绿高亮 (Spotify Green)
+  INPUT_BG: '#242424', // 搜索框默认背景
+  INPUT_FOCUS_BG: '#2a2a2a', // 搜索框聚焦背景
+  TINT: '#1ed760', // 品牌绿高亮 (Brand Green)
   GREEN_DARK: '#1db954', // 深品牌绿
+  GREEN_ALPHA_15: 'rgba(30, 215, 96, 0.15)', // 绿色高亮浅背景
+  GREEN_ALPHA_30: 'rgba(30, 215, 96, 0.30)', // 绿色高亮中背景
   LIGHT_GREY: '#b3b3b3', // 次级文字与未激活图标色
   LIGHTER_GREY: '#d5d5d5',
   GREY: '#777777', // 占位符与微弱文字色

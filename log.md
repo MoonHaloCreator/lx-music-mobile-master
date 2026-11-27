@@ -251,6 +251,42 @@
     5. **关于页与品牌展示**：关于页顶部展示全新 Logo 与 “MeloRiver 音河”。
 - **影响范围与破坏性变更**: 无任何破坏性变更，底层编译逻辑与包名架构完好，所有功能 100% 验收通过。
 
+### [2026-11-19] Spotify 视觉与交互深度优化、统一图片缓存封装及搜索页顶部点击 Bug 根因修复
+- **执行人 / Agent**: Antigravity (Pair Programming Assistant)
+- **需求背景 / 变更目的**:
+  1. 全面同步绿色 Logo (`src/resources/spotify-assets/images/logo.png`) 与品牌主色（`#1ed760`）；
+  2. 基于 Spotify 信息层级重构首页并补充专辑封面与歌手头像（复用内置 `getPicPath`、`getList`、`getListDetail` 与 `musicSdk` 字段）；
+  3. 重构搜索页 Spotify 搜索组件并定位修复搜索页顶部区域点击无反应的根因；
+  4. 按 Spotify 风格优化“试听列表”和“收藏列表”（列表头部展示第一首歌封面、行左侧曲目缩略图、播放/选中高亮与按压反馈）。
+- **核心修改清单**:
+  - **绿色 Logo 与品牌色体系**：
+    - `src/theme/spotify.ts`: 新增 `GREEN_ALPHA_15`、`GREEN_ALPHA_30`、`INPUT_BG`、`INPUT_FOCUS_BG`、`SURFACE_ELEVATED` Tokens；
+    - `src/theme/themes/createThemes.js` & `src/theme/themes/themes.ts`: 修复 `spotify_dark` 中 `c-badge-tertiary` 为 `#b3b3b3` 提升暗底可读性并执行 `npm run build:theme`；
+    - `src/components/common/SpotifyTabBar.tsx`、`src/screens/Home/Vertical/DrawerNav.tsx`、`src/screens/Home/Horizontal/Aside.tsx`、`src/screens/Home/Views/Setting/settings/About.tsx`: 统一引入绿色 `logo.png` 资源并同步绿色强调色；
+    - `src/lang/zh-cn.json`、`src/lang/en-us.json`、`src/lang/zh-tw.json`: 补充首页筛选、热门专辑、搜索空/加载态、列表首曲与曲目数双语词条。
+  - **统一图片缓存与展示组件**：
+    - `src/utils/artworkCache.ts`: 复用 `@/core/music` (`getPicPath`)、`@/core/list` (`getListMusics`) 与 `@/utils/musicSdk` (`tx`/`wy`) 实现专辑封面与歌手头像解析、并发限流（最多 3 并发）、内存缓存与失败 URL 黑名单；
+    - `src/components/common/Image.tsx`: 升级支持 `musicInfo` 懒加载封面、`placeholderType`（`album`/`artist`/`playlist`/`love`）Spotify 风格缺省占位、加载失败回退与缓存。
+  - **首页优化**：
+    - `src/screens/Home/Views/SpotifyHome/index.tsx`: 新增顶部绿色 Logo、筛选胶囊（全部/音乐/歌单）、响应式 2x3/3列常用列表胶囊（展示首曲封面并直达列表详情）、精选歌单横向流、热门专辑/单曲横向流、热门歌手圆形头像流及 `Pressable` 按压反馈；
+    - `src/screens/Home/Horizontal/Main.tsx`、`src/core/list.ts`、`src/event/appEvent.ts`: 对齐横屏/桌面端主视图映射与首页点击跳转事件。
+  - **搜索页顶部点击 Bug 修复与 Spotify 搜索重构**：
+    - 根因修复：`src/store/common/state.ts` 初始补全 `StatusBar.currentHeight`；`src/components/SizeView.tsx` 为全屏测量层增加 `pointerEvents="none"` 并防止 `translucent` 模式下安全高度归零；`src/screens/Home/Vertical/Header.tsx` 与 `Horizontal/Header.tsx` 在 `nav_search` 隐藏旧版抽屉遮挡顶栏；`src/components/SearchTipList/index.tsx`、`src/screens/Home/Views/Search/TipList.tsx`、`src/screens/Home/Views/Search/index.tsx` 修复联想遮罩层定时器未清理与动画中断导致 `blank` 透明遮罩层永久拦截顶部/内容点击的竞态 Bug，添加 `pointerEvents` 防护；`src/components/common/DorpDownMenu.tsx` 将 `Modal` 移出 `Button` 内部解决点击响应冲突；
+    - 搜索组件重构：`src/screens/Home/Views/Search/HeaderBar/SearchInput.tsx`、`HeaderBar/index.tsx`、`BlankView/BrowseCategories.tsx`、`HistorySearch.tsx`、`HotSearch.tsx`、`src/components/SourceSelector.tsx`、`src/components/OnlineList/List.tsx`、`ListItem.tsx` 按 Spotify 风格重写，保留歌曲/歌单结果分区与多音源一键切换，支持聚焦态、清除按钮、加载态/空状态及桌面/移动端响应式适配。
+  - **试听列表与收藏列表优化**：
+    - `src/screens/Home/Views/Mylist/SpotifyLibrary.tsx`、`MusicList/ActiveList.tsx`、`MusicList/List.tsx`、`MusicList/ListItem.tsx`: 列表头部英雄区突出展示第一首歌封面大图与全部播放主按钮，支持试听/收藏快捷切换；列表行包含封面缩略图、标题、音源与歌手、时长、更多操作及播放/选中绿色高亮。
+  - **类型检查与构建兼容性**：
+    - `tsconfig.json`、`.eslintrc.cjs`: 排除参考目录 `RN-Spotify-Clone-Redesigned-main`；
+    - `src/core/player/timeoutExit.ts`、`src/plugins/player/hook.ts`、`src/screens/Home/Views/SongList/HeaderBar/SourceSelector.tsx`、`src/store/player/action.ts`: 修复存量 TypeScript 类型报错。
+- **验证结果**:
+  - `npm run build:theme`: 通过；
+  - `npx tsc --noEmit`: 0 错误通过；
+  - `npx eslint <modified files>`: 0 错误 0 警告通过；
+  - `npm run build-test`: Metro Android bundle 打包及资源拷贝通过（`index.android.bundle`）。
+- **待办 / 后续注意事项**:
+  - 当前环境无在线真机或模拟器连接（`adb devices` 为空），实际真机/模拟器手动点击回归可在连接设备后执行 `npm run dev` 或 `npm run pack:android` 安装验证。
+
+
 
 
 

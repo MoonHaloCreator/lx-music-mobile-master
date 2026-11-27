@@ -1,9 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react'
-import { TouchableOpacity } from 'react-native'
+import { Pressable, View } from 'react-native'
 
 import { Icon } from '@/components/common/Icon'
-import { BorderWidths } from '@/theme'
-import { useTheme } from '@/store/theme/hook'
 import { useActiveListId, useListFetching } from '@/store/list/hook'
 import listState from '@/store/list/state'
 import { createStyle } from '@/utils/tools'
@@ -13,6 +11,7 @@ import Text from '@/components/common/Text'
 import { LIST_IDS } from '@/config/constant'
 import Loading from '@/components/common/Loading'
 import { useSettingValue } from '@/store/setting/hook'
+import { SPOTIFY_COLORS, SPOTIFY_RADIUS } from '@/theme/spotify'
 
 export interface ActiveListProps {
   onShowSearchBar: () => void
@@ -23,7 +22,6 @@ export interface ActiveListType {
 }
 
 export default forwardRef<ActiveListType, ActiveListProps>(({ onShowSearchBar, onScrollToTop }, ref) => {
-  const theme = useTheme()
   const currentListId = useActiveListId()
   const fetching = useListFetching(currentListId)
   const langId = useSettingValue('common.langId')
@@ -53,20 +51,32 @@ export default forwardRef<ActiveListType, ActiveListProps>(({ onShowSearchBar, o
   }
 
   useEffect(() => {
+    if (listState.activeListId) return
     void getListPrevSelectId().then((id) => {
-      setActiveList(id)
+      if (!listState.activeListId) setActiveList(id)
     })
   }, [])
 
   return (
-    <TouchableOpacity onPress={showList} onLongPress={onScrollToTop} style={{ ...styles.currentList, opacity: visibleBar ? 1 : 0, borderBottomColor: theme['c-border-background'] }}>
-      <Icon style={styles.currentListIcon} color={theme['c-button-font']} name="chevron-right" size={12} />
-      { fetching ? <Loading color={theme['c-button-font']} style={styles.loading} /> : null }
-      <Text style={styles.currentListText} numberOfLines={1} color={theme['c-button-font']}>{currentListName}</Text>
-      <TouchableOpacity style={styles.currentListBtns} onPress={onShowSearchBar}>
-        <Icon color={theme['c-button-font']} name="search-2" />
-      </TouchableOpacity>
-    </TouchableOpacity>
+    <View style={[styles.currentList, { opacity: visibleBar ? 1 : 0 }]}>
+      <Pressable
+        onPress={showList}
+        onLongPress={onScrollToTop}
+        style={({ pressed }) => [styles.currentListLeft, pressed && styles.pressed]}
+      >
+        <Icon style={styles.currentListIcon} color={SPOTIFY_COLORS.TINT} name="album" size={14} />
+        {fetching ? <Loading color={SPOTIFY_COLORS.TINT} style={styles.loading} /> : null}
+        <Text style={styles.currentListText} numberOfLines={1} color={SPOTIFY_COLORS.WHITE}>{currentListName}</Text>
+        <Icon color={SPOTIFY_COLORS.LIGHT_GREY} name="chevron-right" size={11} />
+      </Pressable>
+      <Pressable
+        style={({ pressed }) => [styles.currentListBtns, pressed && styles.pressed]}
+        hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+        onPress={onShowSearchBar}
+      >
+        <Icon color={SPOTIFY_COLORS.WHITE} name="search-2" size={16} />
+      </Pressable>
+    </View>
   )
 })
 
@@ -74,34 +84,43 @@ export default forwardRef<ActiveListType, ActiveListProps>(({ onShowSearchBar, o
 const styles = createStyle({
   currentList: {
     flexDirection: 'row',
-    paddingRight: 2,
-    height: 36,
+    paddingHorizontal: 12,
+    height: 40,
     alignItems: 'center',
-    borderBottomWidth: BorderWidths.normal,
-    // backgroundColor: 'rgba(0,0,0,0.2)',
+    justifyContent: 'space-between',
+    backgroundColor: SPOTIFY_COLORS.PRIMARY,
+    borderBottomWidth: 1,
+    borderBottomColor: SPOTIFY_COLORS.DIVIDER,
+  },
+  currentListLeft: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 32,
+    paddingHorizontal: 8,
+    borderRadius: SPOTIFY_RADIUS.S,
+  },
+  pressed: {
+    backgroundColor: SPOTIFY_COLORS.CARD,
   },
   currentListIcon: {
-    paddingLeft: 15,
-    paddingRight: 10,
-    // paddingTop: 10,
-    // paddingBottom: 0,
+    marginRight: 8,
   },
   currentListText: {
     flex: 1,
-    // minWidth: 70,
-    // paddingLeft: 10,
-    paddingRight: 10,
-    // paddingTop: 10,
-    // paddingBottom: 10,
+    paddingRight: 8,
+    fontWeight: '700',
+    fontSize: 13,
   },
   loading: {
     marginRight: 5,
   },
   currentListBtns: {
-    width: 46,
+    width: 38,
+    height: 32,
+    borderRadius: SPOTIFY_RADIUS.ROUND,
     justifyContent: 'center',
     alignItems: 'center',
-    height: '100%',
-    // backgroundColor: 'rgba(0,0,0,0.2)',
+    marginLeft: 6,
   },
 })

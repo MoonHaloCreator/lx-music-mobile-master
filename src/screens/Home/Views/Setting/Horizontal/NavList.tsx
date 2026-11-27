@@ -1,8 +1,6 @@
 import { memo, useRef, useState } from 'react'
 import { View, TouchableOpacity, FlatList, type FlatListProps } from 'react-native'
 
-import { Icon } from '@/components/common/Icon'
-
 import { useTheme } from '@/store/theme/hook'
 import { createStyle } from '@/utils/tools'
 import Text from '@/components/common/Text'
@@ -12,7 +10,7 @@ import { useI18n } from '@/lang'
 
 type FlatListType = FlatListProps<SettingScreenIds>
 
-const ITEM_HEIGHT = scaleSizeH(40)
+const ITEM_HEIGHT = scaleSizeH(44)
 
 const ListItem = memo(({ id, activeId, onPress }: {
   onPress: (item: SettingScreenIds) => void
@@ -29,14 +27,16 @@ const ListItem = memo(({ id, activeId, onPress }: {
   }
 
   return (
-    <View style={{ ...styles.listItem, height: ITEM_HEIGHT }}>
-      {
-        active
-          ? <Icon style={styles.listActiveIcon} name="chevron-right" size={12} color={theme['c-primary-font']} />
-          : null
-      }
-      <TouchableOpacity style={styles.listName} onPress={handlePress}>
-        <Text numberOfLines={1} size={16} color={active ? theme['c-primary-font'] : theme['c-font']}>{t(`setting_${id}`)}</Text>
+    <View style={{ ...styles.listItemWrapper, height: ITEM_HEIGHT }}>
+      <TouchableOpacity
+        style={{
+          ...styles.listItem,
+          backgroundColor: active ? theme['c-primary-background-active'] : 'transparent',
+        }}
+        onPress={handlePress}
+        activeOpacity={0.7}
+      >
+        <Text numberOfLines={1} size={15} color={active ? theme['c-primary-font'] : theme['c-font']}>{t(`setting_${id}`)}</Text>
       </TouchableOpacity>
     </View>
   )
@@ -60,7 +60,7 @@ export default ({ onChangeId }: {
     global.lx.settingActiveId = id
   }
 
-  const renderItem: FlatListType['renderItem'] = ({ item, index }) => (
+  const renderItem: FlatListType['renderItem'] = ({ item }) => (
     <ListItem
       key={item}
       id={item}
@@ -77,15 +77,14 @@ export default ({ onChangeId }: {
     <FlatList
       ref={flatListRef}
       style={styles.container}
+      contentContainerStyle={styles.contentContainer}
       data={SETTING_SCREENS}
       maxToRenderPerBatch={9}
-      // updateCellsBatchingPeriod={80}
       windowSize={9}
       removeClippedSubviews={true}
       initialNumToRender={18}
       renderItem={renderItem}
       keyExtractor={getkey}
-      // extraData={activeIndex}
       getItemLayout={getItemLayout}
     />
   )
@@ -97,34 +96,18 @@ const styles = createStyle({
     flexShrink: 1,
     flexGrow: 0,
   },
-  // listContainer: {
-  //   // borderBottomWidth: BorderWidths.normal2,
-  // },
-
+  contentContainer: {
+    paddingVertical: 8,
+  },
+  listItemWrapper: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
   listItem: {
-    height: 'auto',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingRight: 10,
-    paddingLeft: 10,
-    // borderBottomWidth: BorderWidths.normal,
-  },
-  listActiveIcon: {
-    // width: 18,
-    marginLeft: 3,
-    // paddingRight: 5,
-    textAlign: 'center',
-  },
-  listName: {
-    height: '100%',
-    // height: 46,
-    // paddingTop: 12,
-    // paddingBottom: 12,
+    flex: 1,
+    borderRadius: 10,
+    paddingHorizontal: 12,
     justifyContent: 'center',
-    flexGrow: 1,
-    flexShrink: 1,
-    paddingLeft: 5,
-    // backgroundColor: 'rgba(0,0,0,0.1)',
   },
 })
 

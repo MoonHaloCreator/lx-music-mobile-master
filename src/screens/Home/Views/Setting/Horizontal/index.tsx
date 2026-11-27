@@ -14,14 +14,12 @@ const styles = createStyle({
   },
   nav: {
     height: '100%',
-    width: '22%',
+    width: '24%',
     borderRightWidth: BorderWidths.normal,
   },
   main: {
-    paddingLeft: 15,
-    paddingRight: 15,
-    paddingTop: 15,
-    paddingBottom: 15,
+    padding: 20,
+    paddingBottom: 40,
     flex: 0,
   },
 })

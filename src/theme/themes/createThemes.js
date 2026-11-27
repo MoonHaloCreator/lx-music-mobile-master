@@ -20,7 +20,7 @@ const defaultThemes = [
 
       'c-badge-primary': 'var(c-primary)',
       'c-badge-secondary': '#1ed760',
-      'c-badge-tertiary': '#282828',
+      'c-badge-tertiary': '#b3b3b3',
     },
   },
   {

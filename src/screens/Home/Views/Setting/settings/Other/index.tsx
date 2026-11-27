@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { StyleSheet, View } from 'react-native'
 
 import Section from '../../components/Section'
 import ResourceCache from './ResourceCache'
@@ -14,10 +15,21 @@ export default memo(() => {
   return (
     <Section title={t('setting_other')}>
       <ResourceCache />
+      <View style={styles.divider} />
       <MetaCache />
+      <View style={styles.divider} />
       <DislikeList />
+      <View style={styles.divider} />
       <Log />
       {/* <MaxCache /> */}
     </Section>
   )
+})
+
+const styles = StyleSheet.create({
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: 'rgba(128,128,128,0.18)',
+    marginVertical: 4,
+  },
 })

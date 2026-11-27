@@ -9,9 +9,11 @@ import { toast } from '@/utils/tools'
 import { useI18n } from '@/lang'
 import Text from '@/components/common/Text'
 import { clearLyric, clearOtherSource, getMetaCache } from '@/utils/data'
+import { useTheme } from '@/store/theme/hook'
 
 export default memo(() => {
   const t = useI18n()
+  const theme = useTheme()
   const [otherSourceCleaning, setOtherSourceCleaning] = useState(false)
   const [lyricCleaning, setLyricCleaning] = useState(false)
   const [cacheInfo, setCacheInfo] = useState<{
@@ -57,9 +59,9 @@ export default memo(() => {
     <>
       <SubTitle title={t('setting__other_meta_cache')}>
         <View style={styles.cacheSize}>
-          <Text>{cacheInfo.otherSourceKeys == null ? t('setting_other_cache_getting') : `${t('setting__other_other_source_label')}${cacheInfo.otherSourceKeys.length}`}</Text>
+          <Text size={13} color={theme['c-font-label']}>{cacheInfo.otherSourceKeys == null ? t('setting_other_cache_getting') : `${t('setting__other_other_source_label')}${cacheInfo.otherSourceKeys.length}`}</Text>
           {/* <Text>{cacheInfo.musicUrlKeys == null ? t('setting_other_cache_getting') : `${t('setting__other_music_url_label')}${cacheInfo.musicUrlKeys.length}`}</Text> */}
-          <Text>{cacheInfo.lyricKeys == null ? t('setting_other_cache_getting') : `${t('setting__other_lyric_raw_label')}${cacheInfo.lyricKeys.length}`}</Text>
+          <Text size={13} color={theme['c-font-label']}>{cacheInfo.lyricKeys == null ? t('setting_other_cache_getting') : `${t('setting__other_lyric_raw_label')}${cacheInfo.lyricKeys.length}`}</Text>
         </View>
         <View style={styles.clearBtn}>
           <Button disabled={otherSourceCleaning} onPress={handleCleanOtherSourceCache}>{t('setting__other_other_source_clear_btn')}</Button>
@@ -73,7 +75,8 @@ export default memo(() => {
 
 const styles = StyleSheet.create({
   cacheSize: {
-    marginBottom: 5,
+    marginBottom: 10,
+    gap: 4,
   },
   clearBtn: {
     gap: 5,

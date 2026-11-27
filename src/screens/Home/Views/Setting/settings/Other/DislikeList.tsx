@@ -11,9 +11,11 @@ import Text from '@/components/common/Text'
 import { state, useRuleNum } from '@/store/dislikeList'
 import DislikeEditModal, { type DislikeEditModalType } from './DislikeEditModal'
 import { overwirteDislikeInfo } from '@/core/dislikeList'
+import { useTheme } from '@/store/theme/hook'
 
 export default memo(() => {
   const t = useI18n()
+  const theme = useTheme()
   const modalRef = useRef<DislikeEditModalType>(null)
   const ruleNum = useRuleNum()
 
@@ -30,7 +32,7 @@ export default memo(() => {
   return (
     <SubTitle title={t('setting__other_dislike_list')}>
       <View style={styles.ruleNum}>
-        <Text>{t('setting__other_dislike_list_label', { num: ruleNum })}</Text>
+        <Text size={13} color={theme['c-font-label']}>{t('setting__other_dislike_list_label', { num: ruleNum })}</Text>
       </View>
       <View style={styles.btn}>
         <Button onPress={handleShow}>{t('setting_other_dislike_list_show_btn')}</Button>
@@ -42,7 +44,7 @@ export default memo(() => {
 
 const styles = StyleSheet.create({
   ruleNum: {
-    marginBottom: 5,
+    marginBottom: 10,
   },
   btn: {
     flexDirection: 'row',

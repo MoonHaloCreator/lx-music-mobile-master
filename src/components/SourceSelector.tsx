@@ -3,15 +3,18 @@ import { View } from 'react-native'
 
 import DorpDownMenu, { type DorpDownMenuProps as _DorpDownMenuProps } from '@/components/common/DorpDownMenu'
 import Text from '@/components/common/Text'
+import { Icon } from '@/components/common/Icon'
 import { useI18n } from '@/lang'
 
 import { useSettingValue } from '@/store/setting/hook'
 import { createStyle } from '@/utils/tools'
+import { SPOTIFY_COLORS } from '@/theme/spotify'
 
 type Sources = Readonly<Array<LX.OnlineSource | 'all'>>
 
 export interface SourceSelectorProps<S extends Sources> {
   fontSize?: number
+  compact?: boolean
   center?: _DorpDownMenuProps<any>['center']
   onSourceChange: (source: S[number]) => void
 }
@@ -29,7 +32,7 @@ export const useSourceListI18n = (list: Sources) => {
   }, [list, sourceNameType, t])
 }
 
-const Component = <S extends Sources>({ fontSize = 15, center, onSourceChange }: SourceSelectorProps<S>, ref: Ref<SourceSelectorType<S>>) => {
+const Component = <S extends Sources>({ fontSize = 15, compact = false, center, onSourceChange }: SourceSelectorProps<S>, ref: Ref<SourceSelectorType<S>>) => {
   const sourceNameType = useSettingValue('common.sourceNameType')
   const [list, setList] = useState([] as unknown as S)
   const [source, setSource] = useState<S[number]>('kw')
@@ -59,8 +62,16 @@ const Component = <S extends Sources>({ fontSize = 15, center, onSourceChange }:
       fontSize={fontSize}
       activeId={source}
     >
-      <View style={styles.sourceMenu}>
-        <Text style={{ textAlign: center ? 'center' : 'left' }} numberOfLines={1} size={fontSize}>{t(`source_${sourceNameType}_${source}`)}</Text>
+      <View style={compact ? styles.sourceMenuCompact : styles.sourceMenu}>
+        <Text
+          style={{ textAlign: center ? 'center' : 'left' }}
+          color={compact ? SPOTIFY_COLORS.WHITE : undefined}
+          numberOfLines={1}
+          size={fontSize}
+        >
+          {t(`source_${sourceNameType}_${source}`)}
+        </Text>
+        {compact ? <Icon name="chevron-right" size={10} color={SPOTIFY_COLORS.LIGHT_GREY} style={styles.chevron} /> : null}
       </View>
     </DorpDownMenu>
   )
@@ -73,11 +84,19 @@ const styles = createStyle({
   sourceMenu: {
     height: '100%',
     justifyContent: 'center',
-    // paddingTop: 12,
-    // paddingBottom: 12,
     paddingLeft: 15,
     paddingRight: 15,
-    // backgroundColor: '#ccc',
-
+  },
+  sourceMenuCompact: {
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingLeft: 10,
+    paddingRight: 8,
+  },
+  chevron: {
+    marginLeft: 4,
+    transform: [{ rotate: '90deg' }],
   },
 })

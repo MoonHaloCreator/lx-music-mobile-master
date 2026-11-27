@@ -10,7 +10,7 @@ export default memo(({ title, children }: {
 }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+      <Text size={15} style={styles.title}>{title}</Text>
       {children}
     </View>
   )
@@ -19,12 +19,10 @@ export default memo(({ title, children }: {
 
 const styles = createStyle({
   container: {
-    paddingLeft: 25,
-    marginBottom: 18,
+    paddingVertical: 10,
   },
   title: {
-    marginLeft: -10,
-    marginBottom: 10,
-    // lineHeight: 16,
+    fontWeight: '600',
+    marginBottom: 8,
   },
 })

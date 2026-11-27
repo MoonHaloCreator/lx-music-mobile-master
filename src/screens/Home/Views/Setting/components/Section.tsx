@@ -4,6 +4,7 @@ import { createStyle } from '@/utils/tools'
 import { useTheme } from '@/store/theme/hook'
 import Text from '@/components/common/Text'
 
+const CARD_BG = 'rgba(128,128,128,0.10)'
 
 interface Props {
   title: string
@@ -15,8 +16,8 @@ export default ({ title, children }: Props) => {
 
   return (
     <View style={styles.container}>
-      <Text style={{ ...styles.title, borderLeftColor: theme['c-primary'] }} size={16} >{title}</Text>
-      <View>
+      <Text style={styles.title} color={theme['c-font']} size={18}>{title}</Text>
+      <View style={styles.card}>
         {children}
       </View>
     </View>
@@ -26,13 +27,17 @@ export default ({ title, children }: Props) => {
 
 const styles = createStyle({
   container: {
-    // paddingLeft: 10,
-    // backgroundColor: 'rgba(0,0,0,0.2)',
+    marginBottom: 24,
   },
   title: {
-    borderLeftWidth: 5,
-    paddingLeft: 12,
+    fontWeight: 'bold',
+    paddingLeft: 4,
     marginBottom: 10,
-    // lineHeight: 16,
+  },
+  card: {
+    backgroundColor: CARD_BG,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
   },
 })

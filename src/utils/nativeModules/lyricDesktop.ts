@@ -189,7 +189,7 @@ export const setSingleLine = async(isSingleLine: boolean): Promise<void> => {
   return LyricModule.setSingleLine(isSingleLine)
 }
 
-export const setPosition = async(x: number, y: number): Promise<void> => {
+export const setPosition = async(x: number, y: number): Promise<{ x: number, y: number } | null> => {
   return LyricModule.setPosition(x, y)
 }
 

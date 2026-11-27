@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, forwardRef, useImperativeHandle } from 'react'
-import { FlatList, type FlatListProps, RefreshControl, View } from 'react-native'
+import { FlatList, type FlatListProps, Pressable, RefreshControl, View } from 'react-native'
 
 // import { useMusicList } from '@/store/list/hook'
 import ListItem, { ITEM_HEIGHT } from './ListItem'
@@ -11,8 +11,13 @@ import settingState from '@/store/setting/state'
 import { MULTI_SELECT_BAR_HEIGHT } from './MultipleModeBar'
 import { useI18n } from '@/lang'
 import Text from '@/components/common/Text'
+import Loading from '@/components/common/Loading'
+import { Icon } from '@/components/common/Icon'
 import { handlePlay } from './listAction'
 import { useSettingValue } from '@/store/setting/hook'
+import { usePlayerMusicInfo } from '@/store/player/hook'
+import { SPOTIFY_COLORS, SPOTIFY_RADIUS } from '@/theme/spotify'
+import { scaleSizeH, scaleSizeW } from '@/utils/pixelRatio'
 
 type FlatListType = FlatListProps<LX.Music.MusicInfoOnline>
 
@@ -56,8 +61,6 @@ const List = forwardRef<ListType, ListProps>(({
   checkHomePagerIdle,
   rowType,
 }, ref) => {
-  // const t = useI18n()
-  const theme = useTheme()
   const flatListRef = useRef<FlatList>(null)
   const [currentList, setList] = useState<LX.Music.MusicInfoOnline[]>([])
   const [showSource, setShowSource] = useState(false)
@@ -71,6 +74,9 @@ const List = forwardRef<ListType, ListProps>(({
   const rowInfo = useRef(getRowInfo(rowType))
   const isShowAlbumName = useSettingValue('list.isShowAlbumName')
   const isShowInterval = useSettingValue('list.isShowInterval')
+  const playerMusicInfo = usePlayerMusicInfo()
+  const playingId = playerMusicInfo.id ?? ''
+  const t = useI18n()
   // const currentListIdRef = useRef('')
   // console.log('render music list')
 
@@ -184,6 +190,7 @@ const List = forwardRef<ListType, ListProps>(({
     <ListItem
       item={item}
       index={index}
+      isPlaying={playingId !== '' && playingId === item.id}
       showSource={showSource}
       onPress={handlePress}
       onLongPress={handleLongPress}
@@ -200,56 +207,92 @@ const List = forwardRef<ListType, ListProps>(({
   }
   const refreshControl = useMemo(() => (
     <RefreshControl
-      colors={[theme['c-primary']]}
-      // progressBackgroundColor={theme.primary}
+      colors={[SPOTIFY_COLORS.TINT]}
       refreshing={status == 'refreshing'}
       onRefresh={onRefresh} />
-  ), [status, onRefresh, theme])
+  ), [status, onRefresh])
+  const emptyComponent = useMemo(() => {
+    if (status === 'loading' || status === 'refreshing') {
+      return (
+        <View style={styles.emptyBox}>
+          <Loading color={SPOTIFY_COLORS.TINT} />
+          <Text style={styles.emptyTitle} color={SPOTIFY_COLORS.LIGHT_GREY} size={13}>
+            {t('spotify_search_loading')}
+          </Text>
+        </View>
+      )
+    }
+    if (status === 'error') {
+      return (
+        <Pressable
+          style={({ pressed }) => [styles.emptyBox, pressed && { opacity: 0.75 }]}
+          onPress={onRefresh}
+        >
+          <Icon name="available_updates" size={28} color={SPOTIFY_COLORS.TINT} />
+          <Text style={styles.emptyTitle} color={SPOTIFY_COLORS.WHITE} size={14}>
+            {t('spotify_search_error')}
+          </Text>
+        </Pressable>
+      )
+    }
+    return (
+      <View style={styles.emptyBox}>
+        <View style={styles.emptyIconCircle}>
+          <Icon name="search-2" size={24} color={SPOTIFY_COLORS.LIGHT_GREY} />
+        </View>
+        <Text style={styles.emptyTitle} color={SPOTIFY_COLORS.WHITE} size={15}>
+          {t('spotify_search_empty_title')}
+        </Text>
+        <Text style={styles.emptyDesc} color={SPOTIFY_COLORS.LIGHT_GREY} size={12}>
+          {t('spotify_search_empty_desc')}
+        </Text>
+      </View>
+    )
+  }, [onRefresh, status, t])
   const footerComponent = useMemo(() => {
     let label: FooterLabel
     switch (status) {
       case 'refreshing': return null
       case 'loading':
-        label = 'list_loading'
+        label = currentList.length ? 'list_loading' : null
         break
       case 'end':
-        label = 'list_end'
+        label = currentList.length ? 'list_end' : null
         break
       case 'error':
-        label = 'list_error'
+        label = currentList.length ? 'list_error' : null
         break
       case 'idle':
         label = null
         break
     }
     return (
-      <View style={{ width: '100%', paddingBottom: visibleMultiSelect ? MULTI_SELECT_BAR_HEIGHT : 0 }} >
+      <View style={{ width: '100%', paddingBottom: visibleMultiSelect ? MULTI_SELECT_BAR_HEIGHT : scaleSizeH(80) }} >
         <Footer label={label} onLoadMore={onLoadMore} />
       </View>
     )
-  }, [onLoadMore, status, visibleMultiSelect])
+  }, [currentList.length, onLoadMore, status, visibleMultiSelect])
 
   return (
     <FlatList
       ref={flatListRef}
       style={styles.list}
       data={currentList}
+      extraData={`${playingId}_${selectedList.length}`}
       numColumns={rowInfo.current.rowNum}
       horizontal={false}
-      maxToRenderPerBatch={4}
-      // updateCellsBatchingPeriod={80}
+      maxToRenderPerBatch={6}
       windowSize={8}
       removeClippedSubviews={true}
       initialNumToRender={12}
       renderItem={renderItem}
       keyExtractor={getkey}
       getItemLayout={getItemLayout}
-      // onRefresh={onRefresh}
-      // refreshing={refreshing}
       onEndReachedThreshold={0.5}
       onEndReached={handleLoadMore}
       progressViewOffset={progressViewOffset}
       ListHeaderComponent={ListHeaderComponent}
+      ListEmptyComponent={emptyComponent}
       refreshControl={refreshControl}
       ListFooterComponent={footerComponent}
     />
@@ -289,6 +332,31 @@ const styles = createStyle({
   footer: {
     textAlign: 'center',
     padding: 10,
+  },
+  emptyBox: {
+    paddingTop: scaleSizeH(56),
+    paddingHorizontal: scaleSizeW(24),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyIconCircle: {
+    width: scaleSizeW(56),
+    height: scaleSizeW(56),
+    borderRadius: SPOTIFY_RADIUS.ROUND,
+    backgroundColor: SPOTIFY_COLORS.CARD,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: scaleSizeH(12),
+  },
+  emptyTitle: {
+    marginTop: scaleSizeH(10),
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  emptyDesc: {
+    marginTop: scaleSizeH(6),
+    textAlign: 'center',
+    lineHeight: 18,
   },
 })
 

@@ -144,14 +144,28 @@ export const createList = async({ name, id = `userlist_${Date.now()}`, list = []
   if (list) await addListMusics(id, list, settingState.setting['list.addMusicLocationType'])
 }
 
+let pendingOpenListId: string | null = null
+
+export const requestOpenListDetail = (id: string) => {
+  pendingOpenListId = id
+  setActiveList(id)
+  global.app_event.openMyListDetail(id)
+}
+
+export const consumePendingOpenListId = (): string | null => {
+  const id = pendingOpenListId
+  pendingOpenListId = null
+  return id
+}
+
 /**
  * 设置当前激活的歌曲列表
  * @param id
  */
 export const setActiveList = (id: string) => {
+  saveListPrevSelectId(id)
   if (listState.activeListId == id) return
   listAction.setActiveList(id)
-  saveListPrevSelectId(id)
 }
 
 /**

@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { ScrollView, TouchableOpacity, View } from 'react-native'
+import { Image, ScrollView, TouchableOpacity, View } from 'react-native'
 import { useI18n } from '@/lang'
 import { useNavActiveId, useStatusbarHeight } from '@/store/common/hook'
 import { useTheme } from '@/store/theme/hook'
@@ -12,6 +12,7 @@ import type { InitState } from '@/store/common/state'
 import { exitApp, setNavActiveId } from '@/core/common'
 import Text from '@/components/common/Text'
 import { useSettingValue } from '@/store/setting/hook'
+import { SPOTIFY_COLORS } from '@/theme/spotify'
 
 const styles = createStyle({
   container: {
@@ -29,7 +30,13 @@ const styles = createStyle({
   },
   headerText: {
     textAlign: 'center',
-    marginLeft: 16,
+    marginLeft: 12,
+    fontWeight: '800',
+  },
+  logoImage: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
   },
   menus: {
     flex: 1,
@@ -58,13 +65,17 @@ const styles = createStyle({
 })
 
 const Header = () => {
-  const theme = useTheme()
   const statusBarHeight = useStatusbarHeight()
   return (
-    <View style={{ paddingTop: statusBarHeight, backgroundColor: theme['c-primary-light-700-alpha-500'] }}>
+    <View style={{ paddingTop: statusBarHeight, backgroundColor: SPOTIFY_COLORS.SECONDARY, borderBottomWidth: 1, borderBottomColor: SPOTIFY_COLORS.DIVIDER }}>
       <View style={styles.header}>
-        <Icon name="logo" color={theme['c-primary-dark-100-alpha-300']} size={28} />
-        <Text style={styles.headerText} size={28} color={theme['c-primary-dark-100-alpha-300']}>LX Music</Text>
+        <Image
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          source={require('@/resources/spotify-assets/images/logo.png')}
+          style={styles.logoImage}
+          resizeMode="contain"
+        />
+        <Text style={styles.headerText} size={24} color={SPOTIFY_COLORS.TINT}>MeloRiver</Text>
       </View>
     </View>
   )

@@ -12,9 +12,11 @@ import { sizeFormate } from '@/utils'
 import { useI18n } from '@/lang'
 import Text from '@/components/common/Text'
 import { clearMusicUrl } from '@/utils/data'
+import { useTheme } from '@/store/theme/hook'
 
 export default memo(() => {
   const t = useI18n()
+  const theme = useTheme()
   const [cleaning, setCleaning] = useState(false)
   const [cacheSize, setCacheSize] = useState<string | null>(null)
   // const setting = useGetter('common', 'setting')
@@ -60,7 +62,7 @@ export default memo(() => {
     <>
       <SubTitle title={t('setting__other_resource_cache')}>
         <View style={styles.cacheSize}>
-          <Text>{cacheSize == null ? t('setting_other_cache_getting') : t('setting_other_cache_size') + cacheSize}</Text>
+          <Text size={13} color={theme['c-font-label']}>{cacheSize == null ? t('setting_other_cache_getting') : t('setting_other_cache_size') + cacheSize}</Text>
         </View>
         <View style={styles.clearBtn}>
           <Button disabled={cleaning} onPress={handleCleanCache}>{t('setting_other_cache_clear_btn')}</Button>
@@ -72,7 +74,7 @@ export default memo(() => {
 
 const styles = StyleSheet.create({
   cacheSize: {
-    marginBottom: 5,
+    marginBottom: 10,
   },
   clearBtn: {
     flexDirection: 'row',

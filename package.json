@@ -1,6 +1,6 @@
 {
   "name": "lx-music-mobile",
-  "version": "1.9.1",
+  "version": "1.9.3",
   "versionCode": 78,
   "private": true,
   "scripts": {
@@ -29,7 +29,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lyswhut/lx-music-mobile.git"
+    "url": "git+https://github.com/MoonHaloCreator/lx-music-mobile-master.git"
   },
   "keywords": [
     "music-player",
@@ -41,9 +41,9 @@
   },
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/lyswhut/lx-music-mobile/issues"
+    "url": "https://github.com/MoonHaloCreator/lx-music-mobile-master/issues"
   },
-  "homepage": "https://github.com/lyswhut/lx-music-mobile#readme",
+  "homepage": "https://github.com/MoonHaloCreator/lx-music-mobile-master#readme",
   "dependencies": {
     "@craftzdog/react-native-buffer": "^6.1.2",
     "@react-native-async-storage/async-storage": "~2.1.2",

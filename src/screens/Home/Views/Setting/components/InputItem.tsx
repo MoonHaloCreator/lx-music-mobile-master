@@ -78,19 +78,18 @@ export default memo(({ value, label, onChanged, ...props }: InputItemProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingLeft: 25,
+    paddingLeft: 0,
     marginBottom: 15,
   },
   label: {
-    marginBottom: 2,
+    marginBottom: 4,
   },
   input: {
     backgroundColor: 'rgba(0,0,0,0.2)',
     flexGrow: 1,
     flexShrink: 1,
-    borderRadius: 4,
-    // paddingTop: 3,
-    // paddingBottom: 3,
-    maxWidth: 300,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    maxWidth: 420,
   },
 })

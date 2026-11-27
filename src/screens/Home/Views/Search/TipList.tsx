@@ -89,9 +89,10 @@ export default forwardRef<TipListType, TipListProps>(({ onSearch }, ref) => {
       }
     },
     hide() {
+      visibleListRef.current = false
+      searchTipListRef.current?.setList([])
       requestAnimationFrame(() => {
-        visibleListRef.current = false
-        searchTipListRef.current?.setList([])
+        if (!visibleListRef.current) setVisible(false)
       })
     },
   }), [visible])
@@ -113,7 +114,11 @@ export default forwardRef<TipListType, TipListProps>(({ onSearch }, ref) => {
       ? <SearchTipList
           ref={searchTipListRef}
           renderItem={renderItem}
-          onPressBg={() => searchTipListRef.current?.setList([])}
+          onPressBg={() => {
+            visibleListRef.current = false
+            searchTipListRef.current?.setList([])
+            setVisible(false)
+          }}
           keyExtractor={getkey}
           getItemLayout={getItemLayout}
         />

@@ -1,17 +1,16 @@
 import { memo } from 'react'
 import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
   Dimensions,
+  Pressable,
+  StyleSheet,
+  View,
 } from 'react-native'
 import Text from '@/components/common/Text'
 import { Icon } from '@/components/common/Icon'
 import { SPOTIFY_COLORS, SPOTIFY_RADIUS, BROWSE_CATEGORIES_COLORS } from '@/theme/spotify'
 import { scaleSizeH, scaleSizeW } from '@/utils/pixelRatio'
 import { useI18n } from '@/lang'
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window')
+import { useWindowSize } from '@/utils/hooks'
 
 interface BrowseCategoriesProps {
   onSearch: (keyword: string) => void
@@ -34,27 +33,32 @@ const CATEGORIES = [
 
 export default memo<BrowseCategoriesProps>(({ onSearch }) => {
   const t = useI18n()
-  const itemWidth = (SCREEN_WIDTH - scaleSizeW(32) - scaleSizeW(12)) / 2
+  const windowSize = useWindowSize()
+  const screenWidth = windowSize.width || Dimensions.get('window').width
+  const cols = screenWidth >= 900 ? 4 : screenWidth >= 600 ? 3 : 2
+  const horizontalPad = scaleSizeW(30)
+  const gap = scaleSizeW(12)
+  const itemWidth = Math.floor((screenWidth - horizontalPad - gap * (cols - 1)) / cols)
 
   return (
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>{t('spotify_browse_all')}</Text>
       <View style={styles.grid}>
         {CATEGORIES.map((category) => (
-          <TouchableOpacity
+          <Pressable
             key={category.id}
-            style={[
+            style={({ pressed }) => [
               styles.tile,
               { width: itemWidth, backgroundColor: category.color },
+              pressed && styles.tilePressed,
             ]}
-            activeOpacity={0.85}
-            onPress={() => onSearch(category.title)}
+            onPress={() => { onSearch(category.title) }}
           >
-            <Text style={styles.tileText}>{category.title}</Text>
+            <Text style={styles.tileText} numberOfLines={2}>{category.title}</Text>
             <View style={styles.iconContainer}>
-              <Icon name={category.icon as any} size={28} color="rgba(255,255,255,0.85)" />
+              <Icon name={category.icon} size={30} color="rgba(255,255,255,0.85)" />
             </View>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </View>
     </View>
@@ -63,8 +67,8 @@ export default memo<BrowseCategoriesProps>(({ onSearch }) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: scaleSizeH(20),
-    marginBottom: scaleSizeH(24),
+    marginTop: scaleSizeH(18),
+    marginBottom: scaleSizeH(76),
   },
   sectionTitle: {
     color: SPOTIFY_COLORS.WHITE,
@@ -78,7 +82,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   tile: {
-    height: scaleSizeH(84),
+    height: scaleSizeH(88),
     borderRadius: SPOTIFY_RADIUS.M,
     padding: scaleSizeW(12),
     marginBottom: scaleSizeH(12),
@@ -86,12 +90,16 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     justifyContent: 'flex-start',
   },
+  tilePressed: {
+    opacity: 0.84,
+    transform: [{ scale: 0.97 }],
+  },
   tileText: {
     color: SPOTIFY_COLORS.WHITE,
     fontSize: 15,
     fontWeight: '800',
     zIndex: 2,
-    maxWidth: '75%',
+    maxWidth: '78%',
   },
   iconContainer: {
     position: 'absolute',

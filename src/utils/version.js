@@ -1,8 +1,11 @@
 import { httpGet } from '@/utils/request'
-import { author, name } from '../../package.json'
 import { downloadFile, stopDownload, temporaryDirectoryPath } from '@/utils/fs'
 import { getSupportedAbis, installApk } from '@/utils/nativeModules/utils'
 import { APP_PROVIDER_NAME } from '@/config/constant'
+
+const REPO_OWNER = 'MoonHaloCreator'
+const REPO_NAME = 'lx-music-mobile-master'
+const APK_PREFIX = 'MeloRiver'
 
 const abis = [
   'arm64-v8a',
@@ -13,14 +16,11 @@ const abis = [
 ]
 
 const address = [
-  [`https://raw.githubusercontent.com/${author.name}/${name}/master/publish/version.json`, 'direct'],
-  ['https://registry.npmjs.org/lx-music-mobile-version-info/latest', 'npm'],
-  [`https://cdn.jsdelivr.net/gh/${author.name}/${name}/publish/version.json`, 'direct'],
-  [`https://fastly.jsdelivr.net/gh/${author.name}/${name}/publish/version.json`, 'direct'],
-  [`https://gcore.jsdelivr.net/gh/${author.name}/${name}/publish/version.json`, 'direct'],
-  ['https://registry.npmmirror.com/lx-music-mobile-version-info/latest', 'npm'],
-  ['https://gitee.com/lyswhut/lx-music-mobile-versions/raw/master/version.json', 'direct'],
-  ['http://cdn.stsky.cn/lx-music/mobile/version.json', 'direct'],
+  [`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/master/publish/version.json`, 'direct'],
+  [`https://cdn.jsdelivr.net/gh/${REPO_OWNER}/${REPO_NAME}@master/publish/version.json`, 'direct'],
+  [`https://fastly.jsdelivr.net/gh/${REPO_OWNER}/${REPO_NAME}@master/publish/version.json`, 'direct'],
+  [`https://gcore.jsdelivr.net/gh/${REPO_OWNER}/${REPO_NAME}@master/publish/version.json`, 'direct'],
+  [`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest`, 'github_release'],
 ]
 
 
@@ -45,12 +45,14 @@ const getDirectInfo = async(url) => {
   })
 }
 
-const getNpmPkgInfo = async(url) => {
-  return request(url).then(json => {
-    if (!json.versionInfo) throw new Error('failed')
-    const info = JSON.parse(json.versionInfo)
-    if (info.version == null) throw new Error('failed')
-    return info
+const getGithubReleaseInfo = async(url) => {
+  return request(url).then(info => {
+    if (!info || !info.tag_name) throw new Error('failed')
+    return {
+      version: String(info.tag_name).replace(/^v/i, ''),
+      desc: info.body || '',
+      history: [],
+    }
   })
 }
 
@@ -61,8 +63,8 @@ export const getVersionInfo = async(index = 0) => {
     case 'direct':
       promise = getDirectInfo(url)
       break
-    case 'npm':
-      promise = getNpmPkgInfo(url)
+    case 'github_release':
+      promise = getGithubReleaseInfo(url)
       break
   }
 
@@ -86,8 +88,8 @@ let apkSavePath
 
 export const downloadNewVersion = async(version, onDownload = noop) => {
   const abi = await getTargetAbi()
-  const url = `https://github.com/${author.name}/${name}/releases/download/v${version}/${name}-v${version}-${abi}.apk`
-  let savePath = temporaryDirectoryPath + '/lx-music-mobile.apk'
+  const url = `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/download/v${version}/${APK_PREFIX}-v${version}-${abi}.apk`
+  let savePath = temporaryDirectoryPath + '/MeloRiver.apk'
 
   if (downloadJobId) stopDownload(downloadJobId)
 

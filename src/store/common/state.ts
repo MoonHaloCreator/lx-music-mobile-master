@@ -1,3 +1,4 @@
+import { StatusBar } from 'react-native'
 import { type NAV_ID_Type, type COMPONENT_IDS } from '@/config/constant'
 
 
@@ -15,7 +16,7 @@ const initData = {}
 
 const state: InitState = {
   fontSize: global.lx.fontSize,
-  statusbarHeight: 0,
+  statusbarHeight: StatusBar.currentHeight ?? 0,
   componentIds: {},
   navActiveId: 'nav_search',
   lastNavActiveId: 'nav_search',

@@ -112,7 +112,7 @@ const Header = () => {
   const drawerLayoutPosition = useSettingValue('common.drawerLayoutPosition')
   const id = useNavActiveId()
 
-  if (id === 'nav_songlist' || id === 'nav_love') {
+  if (id === 'nav_songlist' || id === 'nav_love' || id === 'nav_search') {
     return <StatusBar />
   }
 

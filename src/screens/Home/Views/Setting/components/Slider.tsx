@@ -9,7 +9,7 @@ export type {
   SliderProps,
 }
 
-export default memo(({ value, minimumValue, maximumValue, onSlidingStart, onSlidingComplete, onValueChange, step }: SliderProps) => {
+export default memo(({ value, minimumValue, maximumValue, onSlidingStart, onSlidingComplete, onValueChange, step, disabled }: SliderProps) => {
   const theme = useTheme()
 
   return (
@@ -25,6 +25,7 @@ export default memo(({ value, minimumValue, maximumValue, onSlidingStart, onSlid
       onSlidingComplete={onSlidingComplete}
       onValueChange={onValueChange}
       step={step}
+      disabled={disabled}
     />
   )
 })
@@ -35,8 +36,7 @@ const styles = createStyle({
     flexShrink: 0,
     flexGrow: 1,
     // width: '100%',
-    maxWidth: 300,
+    maxWidth: 420,
     height: 40,
-    marginTop: -6,
   },
 })

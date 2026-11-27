@@ -10,6 +10,8 @@ import { clearHistoryList, getSearchHistory, removeHistoryWord } from '@/core/se
 import { Icon } from '@/components/common/Icon'
 
 
+import { SPOTIFY_COLORS, SPOTIFY_RADIUS } from '@/theme/spotify'
+
 export type List = NonNullable<InitState['sourceList'][keyof InitState['sourceList']]>
 
 const ListItem = ({ keyword, onSearch, onRemove }: {
@@ -17,14 +19,13 @@ const ListItem = ({ keyword, onSearch, onRemove }: {
   onSearch: (keyword: string) => void
   onRemove: (keyword: string) => void
 }) => {
-  const theme = useTheme()
   return (
     <Button
-      style={{ ...styles.button, backgroundColor: theme['c-button-background'] }}
+      style={styles.button}
       onPress={() => { onSearch(keyword) }}
       onLongPress={() => { onRemove(keyword) }}
     >
-      <Text color={theme['c-button-font']} size={13}>{keyword}</Text>
+      <Text color={SPOTIFY_COLORS.WHITE} size={13}>{keyword}</Text>
     </Button>
   )
 }
@@ -119,12 +120,15 @@ const styles = createStyle({
   },
   button: {
     textAlign: 'center',
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingTop: 5,
-    paddingBottom: 5,
-    borderRadius: 4,
-    marginRight: 10,
+    paddingLeft: 14,
+    paddingRight: 14,
+    paddingTop: 7,
+    paddingBottom: 7,
+    borderRadius: SPOTIFY_RADIUS.ROUND,
+    backgroundColor: SPOTIFY_COLORS.INPUT_BG,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    marginRight: 8,
     marginTop: 8,
   },
 })

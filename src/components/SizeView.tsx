@@ -6,12 +6,15 @@ import { setStatusbarHeight } from '@/core/common'
 import { windowSizeTools, getWindowSize } from '@/utils/windowSizeTools'
 
 const getStatusbarHeight = (winHeight: number, layoutHeight: number) => {
+  const statusBarHeight = StatusBar.currentHeight ?? 0
+  if (!statusBarHeight) return 0
   const height = (!settingState.setting['common.alwaysKeepStatusbarHeight'] &&
           parseFloat(winHeight.toFixed(2)) >= parseFloat(layoutHeight.toFixed(2)))
     ? 0
-    : (StatusBar.currentHeight ?? 0)
+    : statusBarHeight
 
-  return height
+  // StatusBar 使用 translucent={true} 时，始终保留状态栏安全区高度，避免顶部搜索栏/设置按钮陷入状态栏手势遮挡区
+  return Math.max(height, statusBarHeight)
 }
 
 export default memo(() => {
@@ -67,6 +70,6 @@ export default memo(() => {
       global.state_event.off('configUpdated', handleSettingUpdate)
     }
   }, [])
-  return (<View style={StyleSheet.absoluteFill} onLayout={handleLayout} />)
+  return (<View pointerEvents="none" style={StyleSheet.absoluteFill} onLayout={handleLayout} />)
 }, () => true)
 

@@ -201,6 +201,14 @@ export class AppEvent extends Event {
   selectSyncMode(mode: LX.Sync.ModeType) {
     this.emit('selectSyncMode', mode)
   }
+
+  openMyListDetail(id: string) {
+    this.emit('openMyListDetail', id)
+  }
+
+  searchKeyword(keyword: string) {
+    this.emit('searchKeyword', keyword)
+  }
 }
 
 

@@ -34,8 +34,10 @@ export default <T extends Menus>({
   }
 
   return (
-    <Button style={btnStyle} ref={buttonRef} onPress={showMenu}>
-      {children}
+    <>
+      <Button style={btnStyle} ref={buttonRef} onPress={showMenu}>
+        {children}
+      </Button>
       <Menu
         ref={menuRef}
         menus={menus}
@@ -45,6 +47,6 @@ export default <T extends Menus>({
         height={height}
         activeId={activeId}
       />
-    </Button>
+    </>
   )
 }

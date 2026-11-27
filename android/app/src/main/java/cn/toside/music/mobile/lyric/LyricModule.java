@@ -12,6 +12,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 
 public class LyricModule extends ReactContextBaseJavaModule {
   private final ReactApplicationContext reactContext;
@@ -180,6 +181,13 @@ public class LyricModule extends ReactContextBaseJavaModule {
   public void setWidth(int width, Promise promise) {
     if (lyric != null) lyric.setWidth(width);
     promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void setPosition(float x, float y, Promise promise) {
+    WritableMap result = null;
+    if (lyric != null) result = lyric.setPosition(x, y);
+    promise.resolve(result);
   }
 
   @ReactMethod

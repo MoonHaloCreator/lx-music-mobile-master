@@ -284,4 +284,9 @@ public class Lyric extends LyricPlayer {
     if (lyricView == null) return;
     lyricView.setLyricTextPosition(positionX, positionY);
   }
+
+  public WritableMap setPosition(float x, float y) {
+    if (lyricView == null) return null;
+    return lyricView.setPosition(x, y);
+  }
 }
